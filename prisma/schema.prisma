@@ -1,0 +1,544 @@
+// Prisma Schema for GranthSetu - Abhyasika Management System
+// Compliant with 14-Week Roadmap Specifications (v2)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------------------------------------
+// ENUMS
+// ----------------------------------------------------
+
+enum UserRole {
+  OWNER
+  STAFF
+  STUDENT
+}
+
+enum ShiftType {
+  MORNING
+  AFTERNOON
+  EVENING
+  NIGHT
+  FULL_DAY_24HR
+  CUSTOM
+}
+
+enum SeatStatus {
+  VACANT
+  BOOKED
+  RESERVED
+  MAINTENANCE
+}
+
+enum AllocationStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  TRANSFERRED
+}
+
+enum PaymentMode {
+  CASH
+  UPI_MANUAL
+  RAZORPAY
+  BANK_TRANSFER
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum FeeStatus {
+  PENDING
+  PARTIAL
+  PAID
+  OVERDUE
+}
+
+enum MessageChannel {
+  WHATSAPP
+  SMS
+}
+
+enum MessageStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+  FALLBACK_SMS
+}
+
+enum MessageEventType {
+  ADMISSION_CONFIRMATION
+  FEES_DUE
+  FEES_PAID
+  SEAT_RENEWAL_REMINDER
+  OTP_VERIFICATION
+}
+
+enum AttendanceType {
+  CHECK_IN
+  CHECK_OUT
+}
+
+enum EnquiryStatus {
+  NEW
+  CONTACTED
+  VISITED
+  CONVERTED
+  LOST
+}
+
+// ----------------------------------------------------
+// 1. MULTI-BRANCH & USERS (RBAC)
+// ----------------------------------------------------
+
+model Branch {
+  id              String             @id @default(uuid())
+  name            String
+  code            String             @unique // e.g. BR-01
+  address         String?
+  city            String?
+  contactPhone    String?
+  contactEmail    String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  users           User[]
+  students        Student[]
+  shifts          Shift[]
+  seats           Seat[]
+  feePlans        FeePlan[]
+  incomes         Income[]
+  expenses        Expense[]
+  receipts        Receipt[]
+  enquiries       Enquiry[]
+
+  @@map("branches")
+}
+
+model User {
+  id              String             @id @default(uuid())
+  branchId        String?
+  role            UserRole           @default(STAFF)
+  name            String
+  mobile          String             @unique
+  email           String?            @unique
+  passwordHash    String?            // Optional if passwordless mobile OTP is primary
+  isActive        Boolean            @default(true)
+  lastLoginAt     DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  branch          Branch?            @relation(fields: [branchId], references: [id])
+  auditLogs       AuditLog[]
+  paymentsCreated Payment[]          @relation("StaffPayments")
+
+  @@index([mobile])
+  @@index([role])
+  @@map("users")
+}
+
+// ----------------------------------------------------
+// 2. ADMISSION & STUDENT PROFILE
+// ----------------------------------------------------
+
+model Student {
+  id                  String             @id @default(uuid())
+  branchId            String
+  studentRegNo        String             @unique // e.g., STU-2026-0001
+  fullName            String
+  mobile              String             @unique
+  isMobileVerified    Boolean            @default(false)
+  email               String?
+  gender              String?
+  dob                 DateTime?
+  address             String?
+  photoUrl            String?
+  idProofUrl          String?
+  coursePreparingFor  String?            // e.g. UPSC, MPSC, NEET, CA
+  qrCodeToken         String             @unique @default(uuid()) // Signed unique token for attendance & ID card
+
+  // Aadhaar eKYC (Compliant with UIDAI rules: Last 4 digits only)
+  aadhaarLast4        String?            @db.VarChar(4)
+  isAadhaarVerified   Boolean            @default(false)
+  aadhaarConsentAt    DateTime?
+  aadhaarProviderRef  String?            // Digio/Setu/Signzy verification transaction ref
+
+  status              String             @default("ACTIVE") // ACTIVE, INACTIVE, SUSPENDED
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  branch              Branch             @relation(fields: [branchId], references: [id])
+  guardians           Guardian[]
+  seatAllocations     SeatAllocation[]
+  fees                StudentFee[]
+  payments            Payment[]
+  attendanceRecords   Attendance[]
+  messageLogs         MessageLog[]
+  aadhaarVerifications AadhaarVerification[]
+
+  @@index([branchId])
+  @@index([mobile])
+  @@index([qrCodeToken])
+  @@map("students")
+}
+
+model Guardian {
+  id                  String             @id @default(uuid())
+  studentId           String
+  relation            String             // Father, Mother, Guardian
+  fullName            String
+  mobile              String
+  isMobileVerified    Boolean            @default(false)
+  email               String?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  student             Student            @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([mobile])
+  @@map("guardians")
+}
+
+// ----------------------------------------------------
+// 3. SEAT RESERVATION & SHIFTS
+// ----------------------------------------------------
+
+model Shift {
+  id              String             @id @default(uuid())
+  branchId        String
+  name            String             // Morning, Afternoon, Evening, Night, 24-Hour
+  shiftType       ShiftType
+  startTime       String             // "06:00"
+  endTime         String             // "14:00"
+  is24Hour        Boolean            @default(false)
+  isActive        Boolean            @default(true)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  branch          Branch             @relation(fields: [branchId], references: [id])
+  allocations     SeatAllocation[]
+  feePlans        FeePlan[]
+
+  @@index([branchId])
+  @@map("shifts")
+}
+
+model Seat {
+  id              String             @id @default(uuid())
+  branchId        String
+  seatNumber      String             // e.g. "A-01", "B-12"
+  section         String?            // "Ground Floor AC", "Quiet Zone"
+  row             Int?
+  column          Int?
+  status          SeatStatus         @default(VACANT)
+  hasLocker       Boolean            @default(false)
+  hasChargingPoint Boolean           @default(true)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  branch          Branch             @relation(fields: [branchId], references: [id])
+  allocations     SeatAllocation[]
+
+  @@unique([branchId, seatNumber])
+  @@map("seats")
+}
+
+model SeatAllocation {
+  id              String             @id @default(uuid())
+  studentId       String
+  seatId          String
+  shiftId         String
+  startDate       DateTime
+  endDate         DateTime
+  status          AllocationStatus   @default(ACTIVE)
+  remarks         String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  student         Student            @relation(fields: [studentId], references: [id])
+  seat            Seat               @relation(fields: [seatId], references: [id])
+  shift           Shift              @relation(fields: [shiftId], references: [id])
+
+  @@index([seatId, shiftId, status])
+  @@index([studentId])
+  @@map("seat_allocations")
+}
+
+// ----------------------------------------------------
+// 4. FEES, PAYMENTS & GATEWAY (RAZORPAY)
+// ----------------------------------------------------
+
+model FeePlan {
+  id              String             @id @default(uuid())
+  branchId        String
+  shiftId         String?
+  name            String             // e.g. "Monthly Morning Shift - AC"
+  durationDays    Int                @default(30)
+  amount          Decimal            @db.Decimal(10, 2)
+  registrationFee Decimal            @default(0.00) @db.Decimal(10, 2)
+  discountMax     Decimal            @default(0.00) @db.Decimal(10, 2)
+  isActive        Boolean            @default(true)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  branch          Branch             @relation(fields: [branchId], references: [id])
+  shift           Shift?             @relation(fields: [shiftId], references: [id])
+  studentFees     StudentFee[]
+
+  @@map("fee_plans")
+}
+
+model StudentFee {
+  id              String             @id @default(uuid())
+  studentId       String
+  feePlanId       String
+  totalAmount     Decimal            @db.Decimal(10, 2)
+  discountAmount  Decimal            @default(0.00) @db.Decimal(10, 2)
+  paidAmount      Decimal            @default(0.00) @db.Decimal(10, 2)
+  balanceAmount   Decimal            @db.Decimal(10, 2)
+  dueDate         DateTime
+  status          FeeStatus          @default(PENDING)
+  periodStart     DateTime
+  periodEnd       DateTime
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  student         Student            @relation(fields: [studentId], references: [id])
+  feePlan         FeePlan            @relation(fields: [feePlanId], references: [id])
+  payments        Payment[]
+
+  @@index([studentId])
+  @@index([dueDate, status])
+  @@map("student_fees")
+}
+
+model Payment {
+  id                  String             @id @default(uuid())
+  studentId           String
+  studentFeeId        String
+  collectedById       String?            // Staff / Admin user who accepted cash or generated payment link
+  amount              Decimal            @db.Decimal(10, 2)
+  mode                PaymentMode
+  status              PaymentStatus      @default(PENDING)
+  
+  // Razorpay attributes (Idempotency & Webhooks)
+  razorpayOrderId     String?            @unique
+  razorpayPaymentId   String?            @unique
+  razorpaySignature   String?
+  webhookReceivedAt   DateTime?
+  idempotencyKey      String?            @unique
+  
+  remarks             String?
+  createdAt           DateTime           @default(now())
+
+  student             Student            @relation(fields: [studentId], references: [id])
+  studentFee          StudentFee         @relation(fields: [studentFeeId], references: [id])
+  collectedBy         User?              @relation("StaffPayments", fields: [collectedById], references: [id])
+  receipt             Receipt?
+
+  @@index([studentFeeId])
+  @@index([razorpayOrderId])
+  @@map("payments")
+}
+
+model Receipt {
+  id              String             @id @default(uuid())
+  branchId        String
+  paymentId       String             @unique
+  receiptNumber   String             @unique // Sequential per branch: e.g. GS-PUN-0001
+  pdfUrl          String?
+  issuedAt        DateTime           @default(now())
+
+  branch          Branch             @relation(fields: [branchId], references: [id])
+  payment         Payment            @relation(fields: [paymentId], references: [id])
+
+  @@index([branchId, receiptNumber])
+  @@map("receipts")
+}
+
+// ----------------------------------------------------
+// 5. ATTENDANCE (QR CODE & DAILY HOURS)
+// ----------------------------------------------------
+
+model Attendance {
+  id              String             @id @default(uuid())
+  studentId       String
+  scanType        AttendanceType
+  scannedAt       DateTime           @default(now())
+  deviceIp        String?
+  scanSource      String?            // "BROWSER_CAMERA", "FRONT_DESK"
+
+  // Calculated study session
+  sessionMinutes  Int?               // Filled upon check-out
+  
+  student         Student            @relation(fields: [studentId], references: [id])
+
+  @@index([studentId, scannedAt])
+  @@map("attendance")
+}
+
+// ----------------------------------------------------
+// 6. ENQUIRIES & SALES PIPELINE
+// ----------------------------------------------------
+
+model Enquiry {
+  id              String             @id @default(uuid())
+  branchId        String
+  candidateName   String
+  mobile          String
+  courseInterest  String?
+  preferredShift  String?
+  status          EnquiryStatus      @default(NEW)
+  followUpDate    DateTime?
+  notes           String?
+  convertedToStudentId String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  branch          Branch             @relation(fields: [branchId], references: [id])
+
+  @@index([branchId, status])
+  @@map("enquiries")
+}
+
+// ----------------------------------------------------
+// 7. EXPENSES & INCOMES (OWNER LEDGER & P&L)
+// ----------------------------------------------------
+
+model Income {
+  id              String             @id @default(uuid())
+  branchId        String
+  title           String
+  category        String             // "STUDENT_FEES", "LOCKER_RENT", "CANTEEN", "MISC"
+  amount          Decimal            @db.Decimal(10, 2)
+  receivedDate    DateTime           @default(now())
+  paymentMode     PaymentMode        @default(CASH)
+  referenceNo     String?
+  notes           String?
+  createdAt       DateTime           @default(now())
+
+  branch          Branch             @relation(fields: [branchId], references: [id])
+
+  @@index([branchId, receivedDate])
+  @@map("incomes")
+}
+
+model Expense {
+  id              String             @id @default(uuid())
+  branchId        String
+  title           String
+  category        String             // "RENT", "ELECTRICITY", "INTERNET", "CLEANING", "SALARY", "MAINTENANCE"
+  amount          Decimal            @db.Decimal(10, 2)
+  expenseDate     DateTime           @default(now())
+  paidTo          String?
+  paymentMode     PaymentMode        @default(CASH)
+  receiptUrl      String?
+  notes           String?
+  createdAt       DateTime           @default(now())
+
+  branch          Branch             @relation(fields: [branchId], references: [id])
+
+  @@index([branchId, expenseDate])
+  @@map("expenses")
+}
+
+// ----------------------------------------------------
+// 8. DUAL MESSAGING LOGS (STUDENT + PARENT)
+// ----------------------------------------------------
+
+model MessageLog {
+  id              String             @id @default(uuid())
+  studentId       String
+  eventType       MessageEventType
+  recipientType   String             // "STUDENT" or "PARENT"
+  recipientNumber String
+  channel         MessageChannel     @default(WHATSAPP)
+  templateId      String?
+  content         String
+  status          MessageStatus      @default(PENDING)
+  providerMessageId String?
+  providerResponse  String?          @db.Text
+  retryCount      Int                @default(0)
+  errorMessage    String?
+  sentAt          DateTime?
+  deliveredAt     DateTime?
+  createdAt       DateTime           @default(now())
+
+  student         Student            @relation(fields: [studentId], references: [id])
+
+  @@index([studentId, eventType])
+  @@index([status])
+  @@map("message_logs")
+}
+
+// ----------------------------------------------------
+// 9. AUTHENTICATION & SECURITY (OTP & AADHAAR eKYC)
+// ----------------------------------------------------
+
+model OtpRequest {
+  id              String             @id @default(uuid())
+  mobile          String
+  otpCodeHash     String             // Encrypted / hashed OTP
+  purpose         String             // "LOGIN", "ADMISSION", "PARENT_VERIFY"
+  attempts        Int                @default(0)
+  maxAttempts     Int                @default(3)
+  expiresAt       DateTime
+  isVerified      Boolean            @default(false)
+  ipAddress       String?
+  createdAt       DateTime           @default(now())
+
+  @@index([mobile, isVerified])
+  @@map("otp_requests")
+}
+
+model AadhaarVerification {
+  id              String             @id @default(uuid())
+  studentId       String
+  provider        String             // "DIGIO", "SETU", "SIGNZY"
+  providerRef     String             @unique
+  aadhaarLast4    String             @db.VarChar(4) // Strictly 4 digits only
+  consentGranted  Boolean            @default(true)
+  isVerified      Boolean            @default(false)
+  verifiedAt      DateTime?
+  rawMeta         String?            @db.Text // Stripped metadata (no raw 12-digit number)
+  createdAt       DateTime           @default(now())
+
+  student         Student            @relation(fields: [studentId], references: [id])
+
+  @@index([studentId])
+  @@map("aadhaar_verifications")
+}
+
+// ----------------------------------------------------
+// 10. AUDIT LOGS (FOR OWNER VISIBILITY & INTEGRITY)
+// ----------------------------------------------------
+
+model AuditLog {
+  id              String             @id @default(uuid())
+  userId          String?            // Performed by user
+  action          String             // "FEE_OVERRIDE", "SEAT_TRANSFER", "REFUND", "ADMISSION_DELETE"
+  entityType      String             // "StudentFee", "SeatAllocation", "Payment"
+  entityId        String
+  oldValues       String?            @db.Text
+  newValues       String?            @db.Text
+  ipAddress       String?
+  createdAt       DateTime           @default(now())
+
+  user            User?              @relation(fields: [userId], references: [id])
+
+  @@index([action, entityType])
+  @@map("audit_logs")
+}
+
