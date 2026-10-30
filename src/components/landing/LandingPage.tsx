@@ -33,6 +33,7 @@ import {
   Play,
   FileText,
   UserCheck,
+  UserPlus,
   Send,
   AlertTriangle,
   RefreshCw,
