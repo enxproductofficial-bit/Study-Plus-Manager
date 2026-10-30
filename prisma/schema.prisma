@@ -16,9 +16,23 @@ datasource db {
 // ----------------------------------------------------
 
 enum UserRole {
+  SUPER_ADMIN
   OWNER
   STAFF
   STUDENT
+}
+
+enum LibraryStatus {
+  PENDING
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum SubscriptionTier {
+  STARTER
+  GROWTH
+  ENTERPRISE
 }
 
 enum ShiftType {
@@ -100,11 +114,67 @@ enum EnquiryStatus {
 }
 
 // ----------------------------------------------------
-// 1. MULTI-BRANCH & USERS (RBAC)
+// 1. MULTI-TENANT LIBRARIES & SUBSCRIPTIONS
+// ----------------------------------------------------
+
+model Library {
+  id                String                 @id @default(uuid())
+  code              String                 @unique // e.g. LIB-2026-001
+  slug              String                 @unique // e.g. studyplus-shivajinagar
+  name              String
+  tagline           String?                @default("Study • Focus • Grow")
+  ownerName         String
+  ownerMobile       String
+  ownerEmail        String?
+  address           String?
+  city              String?
+  state             String?                @default("Maharashtra")
+  pincode           String?
+  totalSeats        Int                    @default(48)
+  status            LibraryStatus          @default(ACTIVE)
+  subscriptionTier  SubscriptionTier       @default(GROWTH)
+  monthlyFee        Decimal                @default(1499.00) @db.Decimal(10, 2)
+  subscriptionEnds  DateTime?
+  logoUrl           String?
+  facilities        String?                // e.g. JSON array of amenities
+  openingHours      String?                @default("06:00 AM - 12:00 AM (24/7 Available)")
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+
+  branches          Branch[]
+  subscriptions     CompanySubscription[]
+
+  @@map("libraries")
+}
+
+model CompanySubscription {
+  id                String             @id @default(uuid())
+  libraryId         String
+  tier              SubscriptionTier   @default(GROWTH)
+  amount            Decimal            @db.Decimal(10, 2)
+  billingCycle      String             @default("MONTHLY") // MONTHLY, ANNUAL
+  status            PaymentStatus      @default(SUCCESS)
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  paymentDate       DateTime           @default(now())
+  validUntil        DateTime
+  invoiceNumber     String             @unique // e.g. ENX-SUB-2026-001
+  notes             String?
+  createdAt         DateTime           @default(now())
+
+  library           Library            @relation(fields: [libraryId], references: [id], onDelete: Cascade)
+
+  @@index([libraryId])
+  @@map("company_subscriptions")
+}
+
+// ----------------------------------------------------
+// 2. MULTI-BRANCH & USERS (RBAC)
 // ----------------------------------------------------
 
 model Branch {
   id              String             @id @default(uuid())
+  libraryId       String?
   name            String
   code            String             @unique // e.g. BR-01
   address         String?
@@ -114,6 +184,7 @@ model Branch {
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt
 
+  library         Library?           @relation(fields: [libraryId], references: [id])
   users           User[]
   students        Student[]
   shifts          Shift[]
@@ -333,6 +404,7 @@ model Payment {
   amount              Decimal            @db.Decimal(10, 2)
   mode                PaymentMode
   status              PaymentStatus      @default(PENDING)
+  paymentType         String             @default("STUDENT_FEE") // STUDENT_FEE, COMPANY_SUBSCRIPTION
   
   // Razorpay attributes (Idempotency & Webhooks)
   razorpayOrderId     String?            @unique

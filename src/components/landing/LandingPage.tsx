@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   BookOpen,
   ArrowRight,
@@ -145,13 +146,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 >
                   Sign In
                 </button>
-                <button
-                  onClick={() => onOpenAuth("SIGNUP")}
+                <Link
+                  href="/register-library"
                   className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-emerald-600/25 hover:from-emerald-700 hover:to-teal-700 transition-all hover:shadow-lg"
                 >
-                  <span>Get Started</span>
+                  <span>Register Library</span>
                   <ArrowRight className="h-3.5 w-3.5" />
-                </button>
+                </Link>
               </>
             )}
           </div>
@@ -190,13 +191,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
               {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-3 pt-2">
-                <button
-                  onClick={() => onOpenAuth("SIGNUP")}
+                <Link
+                  href="/register-library"
                   className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-600/30 hover:from-emerald-700 hover:to-teal-700 transition-all hover:scale-[1.02]"
                 >
-                  <span>Get Started Free</span>
+                  <Building className="h-4 w-4" />
+                  <span>Register Your Library</span>
                   <ArrowRight className="h-4 w-4" />
-                </button>
+                </Link>
 
                 <a
                   href="#features"
@@ -205,6 +207,51 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   <span>Explore Features</span>
                   <ChevronDown className="h-4 w-4 text-slate-400" />
                 </a>
+              </div>
+
+              {/* Direct Multi-Role Test Bar */}
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-3 text-xs">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-2">
+                  Launch Connected SaaS Portals:
+                </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Link
+                    href="/super-admin"
+                    className="inline-flex items-center gap-1 rounded-xl bg-slate-900 px-3 py-1.5 text-[11px] font-bold text-emerald-400 hover:bg-slate-800 transition"
+                  >
+                    <ShieldCheck className="h-3 w-3 text-emerald-400" />
+                    Super Admin
+                  </Link>
+                  <Link
+                    href="/owner"
+                    className="inline-flex items-center gap-1 rounded-xl bg-emerald-600 px-3 py-1.5 text-[11px] font-bold text-white hover:bg-emerald-700 transition"
+                  >
+                    <Building className="h-3 w-3 text-white" />
+                    Owner Dashboard
+                  </Link>
+                  <Link
+                    href="/staff"
+                    className="inline-flex items-center gap-1 rounded-xl bg-blue-600 px-3 py-1.5 text-[11px] font-bold text-white hover:bg-blue-700 transition"
+                  >
+                    <UserCheck className="h-3 w-3 text-white" />
+                    Staff Counter
+                  </Link>
+                  <Link
+                    href="/student"
+                    className="inline-flex items-center gap-1 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-[11px] font-bold text-slate-700 hover:bg-slate-100 transition"
+                  >
+                    <Users className="h-3 w-3 text-emerald-600" />
+                    Student Portal
+                  </Link>
+                  <Link
+                    href="/l/studyplus-shivajinagar"
+                    target="_blank"
+                    className="inline-flex items-center gap-1 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-[11px] font-bold text-slate-700 hover:bg-slate-100 transition"
+                  >
+                    <BookOpen className="h-3 w-3 text-teal-600" />
+                    Library Showcase
+                  </Link>
+                </div>
               </div>
 
               {/* Trust Badges */}
