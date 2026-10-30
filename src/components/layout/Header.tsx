@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Search, Bell, Building2, ChevronDown, ShieldCheck } from "lucide-react";
+import { Search, Bell, Building2, ChevronDown, ShieldCheck, LogOut } from "lucide-react";
 
 interface HeaderProps {
   currentBranch: string;
@@ -9,6 +9,7 @@ interface HeaderProps {
   userRole: "OWNER" | "STAFF" | "STUDENT";
   userName: string;
   onToggleRole?: () => void;
+  onLogout?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -17,6 +18,7 @@ export const Header: React.FC<HeaderProps> = ({
   userRole,
   userName,
   onToggleRole,
+  onLogout,
 }) => {
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white px-6 transition-all dark:border-slate-800 dark:bg-slate-900">
@@ -33,20 +35,11 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Right Controls: Branch Switcher, Notifications & Profile */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 sm:gap-4">
         {/* Multi-Branch Selector */}
         <div className="hidden sm:flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
           <Building2 className="h-3.5 w-3.5 text-blue-600" />
-          <select
-            value={currentBranch}
-            onChange={(e) => onBranchChange(e.target.value)}
-            className="bg-transparent font-medium cursor-pointer focus:outline-none text-slate-800 dark:text-slate-100"
-          >
-            <option value="Main Branch - Shivaji Nagar">Shivaji Nagar (Main)</option>
-            <option value="Branch 2 - FC Road">FC Road Branch</option>
-            <option value="Branch 3 - Kothrud">Kothrud Branch</option>
-          </select>
-          <ChevronDown className="h-3 w-3 text-slate-400" />
+          <span className="font-semibold text-slate-800 dark:text-slate-200">{currentBranch}</span>
         </div>
 
         {/* Notification Bell */}
@@ -61,17 +54,13 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
 
         {/* User Profile Block */}
-        <div className="flex items-center gap-3 border-l border-slate-200 pl-4 dark:border-slate-800">
-          <button
-            onClick={onToggleRole}
-            title="Click to toggle between Owner and Staff view (RBAC)"
-            className="flex items-center gap-2.5 text-left group"
-          >
+        <div className="flex items-center gap-3 border-l border-slate-200 pl-3 sm:pl-4 dark:border-slate-800">
+          <div className="flex items-center gap-2.5 text-left">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-semibold text-sm shadow-sm ring-2 ring-blue-500/20">
               {userName.charAt(0)}
             </div>
             <div className="hidden sm:flex flex-col">
-              <span className="text-xs font-bold text-slate-800 group-hover:text-blue-600 transition-colors dark:text-slate-200">
+              <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                 {userName}
               </span>
               <span className="text-[10px] text-slate-400 flex items-center gap-1">
@@ -79,7 +68,19 @@ export const Header: React.FC<HeaderProps> = ({
                 {userRole === "OWNER" ? "Owner (Full Access)" : "Staff (Desk)"}
               </span>
             </div>
-          </button>
+          </div>
+
+          {/* Sign Out Button */}
+          {onLogout && (
+            <button
+              onClick={onLogout}
+              title="Sign Out of GranthSetu"
+              className="flex items-center gap-1 rounded-xl border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-600 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-600 transition-all dark:border-slate-700 dark:text-slate-400 dark:hover:bg-rose-950/40 dark:hover:text-rose-300"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span className="hidden md:inline">Sign Out</span>
+            </button>
+          )}
         </div>
       </div>
     </header>

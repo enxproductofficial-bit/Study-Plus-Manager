@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Sidebar, NavTab } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { OverviewDashboard } from "@/components/dashboard/OverviewDashboard";
@@ -10,26 +10,69 @@ import { FeeManager } from "@/components/fees/FeeManager";
 import { AttendanceScanner } from "@/components/attendance/AttendanceScanner";
 import { DualMessageHub } from "@/components/messaging/DualMessageHub";
 import { LedgerView } from "@/components/ledger/LedgerView";
+import { AuthPage, AuthUser } from "@/components/auth/AuthPage";
 
 export default function Home() {
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
+  const [isInitializing, setIsInitializing] = useState(true);
   const [currentTab, setCurrentTab] = useState<NavTab>("dashboard");
   const [currentBranch, setCurrentBranch] = useState("Main Branch - Shivaji Nagar");
-  const [userRole, setUserRole] = useState<"OWNER" | "STAFF" | "STUDENT">("OWNER");
-  const [userName, setUserName] = useState("Adhyaksha (Owner)");
 
-  // Toggle role between OWNER and STAFF to demonstrate Business Rule #6 (Ledger access restricted)
-  const toggleRole = () => {
-    if (userRole === "OWNER") {
-      setUserRole("STAFF");
-      setUserName("Desk Officer (Staff)");
-      if (currentTab === "expenses" || currentTab === "reports") {
-        setCurrentTab("dashboard");
+  // Restore authenticated session from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("granthsetu_user");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setCurrentUser(parsed);
+        if (parsed.branchName) {
+          setCurrentBranch(parsed.branchName);
+        }
       }
-    } else {
-      setUserRole("OWNER");
-      setUserName("Adhyaksha (Owner)");
+    } catch (e) {
+      console.error("Auth restore error:", e);
+    } finally {
+      setIsInitializing(false);
     }
+  }, []);
+
+  // Handle Logout
+  const handleLogout = () => {
+    localStorage.removeItem("granthsetu_user");
+    setCurrentUser(null);
+    setCurrentTab("dashboard");
   };
+
+  // While restoring auth session, avoid flickering
+  if (isInitializing) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-slate-950 font-sans text-slate-400">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+          <span className="text-xs font-semibold tracking-wider uppercase text-slate-500">
+            Initializing GranthSetu...
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  // If user is not logged in, enforce Auth Login & Signup Screen
+  if (!currentUser) {
+    return (
+      <AuthPage
+        onLoginSuccess={(user) => {
+          setCurrentUser(user);
+          if (user.branchName) {
+            setCurrentBranch(user.branchName);
+          }
+        }}
+      />
+    );
+  }
+
+  const userRole = currentUser.role;
+  const userName = currentUser.name;
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-[#f4f7fb] dark:bg-slate-950 font-sans">
@@ -48,7 +91,7 @@ export default function Home() {
           onBranchChange={setCurrentBranch}
           userRole={userRole}
           userName={userName}
-          onToggleRole={toggleRole}
+          onLogout={handleLogout}
         />
 
         {/* Scrollable Viewport */}
@@ -84,6 +127,9 @@ export default function Home() {
                 <p className="mt-1 text-xs text-slate-400">
                   Manage branches, shift timings, fee tariff plans, and Razorpay webhook configurations.
                 </p>
+                <div className="mt-4 text-xs font-semibold text-slate-500">
+                  Logged in as: <span className="text-blue-600 font-bold">{userName}</span> ({userRole}) | Branch Code: <span className="font-mono">{currentUser.branchCode || "BR-01"}</span>
+                </div>
               </div>
             )}
 
