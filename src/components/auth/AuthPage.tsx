@@ -31,10 +31,16 @@ export interface AuthUser {
 
 interface AuthPageProps {
   onLoginSuccess: (user: AuthUser) => void;
+  onBackToLanding?: () => void;
+  initialTab?: "LOGIN" | "SIGNUP";
 }
 
-export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
-  const [tab, setTab] = useState<"LOGIN" | "SIGNUP">("LOGIN");
+export const AuthPage: React.FC<AuthPageProps> = ({
+  onLoginSuccess,
+  onBackToLanding,
+  initialTab = "LOGIN",
+}) => {
+  const [tab, setTab] = useState<"LOGIN" | "SIGNUP">(initialTab);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -144,6 +150,15 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
       </div>
 
       <div className="relative z-10 w-full max-w-lg">
+        {onBackToLanding && (
+          <button
+            onClick={onBackToLanding}
+            className="mb-4 inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+          >
+            ← Back to Public Website
+          </button>
+        )}
+
         {/* Main Brand Card */}
         <div className="rounded-3xl border border-slate-800 bg-slate-900/90 p-7 sm:p-9 shadow-2xl backdrop-blur-xl">
           {/* Logo & Platform Name */}

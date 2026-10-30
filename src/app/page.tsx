@@ -11,10 +11,13 @@ import { AttendanceScanner } from "@/components/attendance/AttendanceScanner";
 import { DualMessageHub } from "@/components/messaging/DualMessageHub";
 import { LedgerView } from "@/components/ledger/LedgerView";
 import { AuthPage, AuthUser } from "@/components/auth/AuthPage";
+import { LandingPage } from "@/components/landing/LandingPage";
 
 export default function Home() {
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [viewMode, setViewMode] = useState<"landing" | "app" | "auth">("landing");
+  const [authInitialTab, setAuthInitialTab] = useState<"LOGIN" | "SIGNUP">("LOGIN");
   const [currentTab, setCurrentTab] = useState<NavTab>("dashboard");
   const [currentBranch, setCurrentBranch] = useState("Main Branch - Shivaji Nagar");
 
@@ -40,39 +43,65 @@ export default function Home() {
   const handleLogout = () => {
     localStorage.removeItem("granthsetu_user");
     setCurrentUser(null);
+    setViewMode("landing");
     setCurrentTab("dashboard");
   };
 
   // While restoring auth session, avoid flickering
   if (isInitializing) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-slate-950 font-sans text-slate-400">
+      <div className="flex h-screen w-full items-center justify-center bg-white font-sans text-slate-400">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
           <span className="text-xs font-semibold tracking-wider uppercase text-slate-500">
-            Initializing GranthSetu...
+            Loading GranthSetu...
           </span>
         </div>
       </div>
     );
   }
 
-  // If user is not logged in, enforce Auth Login & Signup Screen
-  if (!currentUser) {
+  // 1. PUBLIC SAAS MARKETING LANDING PAGE (Primary Entry Point)
+  if (viewMode === "landing") {
     return (
-      <AuthPage
-        onLoginSuccess={(user) => {
-          setCurrentUser(user);
-          if (user.branchName) {
-            setCurrentBranch(user.branchName);
+      <LandingPage
+        currentUser={currentUser}
+        onOpenAuth={(initialTab = "LOGIN") => {
+          setAuthInitialTab(initialTab);
+          setViewMode("auth");
+        }}
+        onOpenApp={() => {
+          if (currentUser) {
+            setViewMode("app");
+          } else {
+            setAuthInitialTab("LOGIN");
+            setViewMode("auth");
           }
         }}
       />
     );
   }
 
-  const userRole = currentUser.role;
-  const userName = currentUser.name;
+  // 2. AUTHENTICATION SCREEN (Login & Register)
+  if (viewMode === "auth") {
+    return (
+      <AuthPage
+        initialTab={authInitialTab}
+        onBackToLanding={() => setViewMode("landing")}
+        onLoginSuccess={(user) => {
+          setCurrentUser(user);
+          if (user.branchName) {
+            setCurrentBranch(user.branchName);
+          }
+          setViewMode("app");
+        }}
+      />
+    );
+  }
+
+  // 3. AUTHENTICATED MANAGEMENT APPLICATION
+  const userRole = currentUser?.role || "OWNER";
+  const userName = currentUser?.name || "Adhyaksha (Owner)";
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-[#f4f7fb] dark:bg-slate-950 font-sans">
@@ -92,6 +121,7 @@ export default function Home() {
           userRole={userRole}
           userName={userName}
           onLogout={handleLogout}
+          onSwitchToLanding={() => setViewMode("landing")}
         />
 
         {/* Scrollable Viewport */}
@@ -114,7 +144,7 @@ export default function Home() {
                 <p className="mt-1 text-xs text-slate-400">
                   Track student enquiries, shift preferences, follow-up callbacks, and conversion rates.
                 </p>
-                <div className="mt-6 inline-flex rounded-lg bg-blue-50 p-3 text-xs text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-semibold">
+                <div className="mt-6 inline-flex rounded-lg bg-emerald-50 p-3 text-xs text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 font-semibold">
                   Connected with Branch: {currentBranch}
                 </div>
               </div>
@@ -128,7 +158,7 @@ export default function Home() {
                   Manage branches, shift timings, fee tariff plans, and Razorpay webhook configurations.
                 </p>
                 <div className="mt-4 text-xs font-semibold text-slate-500">
-                  Logged in as: <span className="text-blue-600 font-bold">{userName}</span> ({userRole}) | Branch Code: <span className="font-mono">{currentUser.branchCode || "BR-01"}</span>
+                  Logged in as: <span className="text-emerald-600 font-bold">{userName}</span> ({userRole}) | Branch Code: <span className="font-mono">{currentUser?.branchCode || "BR-01"}</span>
                 </div>
               </div>
             )}
@@ -138,7 +168,7 @@ export default function Home() {
               <div className="text-xs font-bold text-slate-700 dark:text-slate-300">
                 GranthSetu – Abhyasika Management System.
               </div>
-              <div className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 mt-0.5">
+              <div className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">
                 Powered by ENTERPRENEX SOLUTION PVT LTD
               </div>
             </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Search, Bell, Building2, ChevronDown, ShieldCheck, LogOut } from "lucide-react";
+import { Search, Bell, Building2, ChevronDown, ShieldCheck, LogOut, Globe } from "lucide-react";
 
 interface HeaderProps {
   currentBranch: string;
@@ -10,6 +10,7 @@ interface HeaderProps {
   userName: string;
   onToggleRole?: () => void;
   onLogout?: () => void;
+  onSwitchToLanding?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -19,6 +20,7 @@ export const Header: React.FC<HeaderProps> = ({
   userName,
   onToggleRole,
   onLogout,
+  onSwitchToLanding,
 }) => {
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white px-6 transition-all dark:border-slate-800 dark:bg-slate-900">
@@ -34,8 +36,20 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Right Controls: Branch Switcher, Notifications & Profile */}
+      {/* Right Controls: Public Site, Branch Switcher, Notifications & Profile */}
       <div className="flex items-center gap-3 sm:gap-4">
+        {/* Public SaaS Website Toggle */}
+        {onSwitchToLanding && (
+          <button
+            onClick={onSwitchToLanding}
+            title="View Public SaaS Marketing Website"
+            className="hidden sm:flex items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition-all dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+          >
+            <Globe className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>Public Website</span>
+          </button>
+        )}
+
         {/* Multi-Branch Selector */}
         <div className="hidden sm:flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
           <Building2 className="h-3.5 w-3.5 text-blue-600" />
