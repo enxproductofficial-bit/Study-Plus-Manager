@@ -499,11 +499,16 @@ export const AuthPage: React.FC<AuthPageProps> = ({
               <span>GranthSetu – Abhyasika Management System</span>
             </div>
             <div className="mt-1 text-[11px] font-semibold text-blue-400">
-              Powered by ENTERPRENEX SOLUTION PVT LTD
+              Enterprenex Solutions Pvt Ltd
             </div>
-            <div className="mt-2 flex items-center justify-center gap-1 text-[11px] text-slate-400">
-              <Headphones className="h-3 w-3" />
-              <span>Need Setup Help? Call Enterprenex Support: <b>9226860060</b></span>
+            <div className="mt-2 text-[11px] text-slate-400 space-y-1">
+              <div className="flex items-center justify-center gap-1.5">
+                <Headphones className="h-3 w-3 text-cyan-400" />
+                <span>Support & WhatsApp: <a href="tel:+919226860060" className="font-bold text-white hover:underline">+91-9226860060</a></span>
+              </div>
+              <p className="text-[10px] text-slate-500">
+                Plot No. 148, Shrinand Plaza, CIDCO Waluj Mahanagar 1, Chhatrapati Sambhajinagar, MH 431136
+              </p>
             </div>
           </div>
         </div>

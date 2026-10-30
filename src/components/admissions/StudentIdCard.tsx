@@ -195,7 +195,7 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({ cardData, onClose 
               <span className="font-bold text-xs tracking-wider uppercase text-amber-400">
                 Study Room Regulations
               </span>
-              <span className="text-[8px] text-slate-300">Helpline: 9226860060</span>
+              <span className="text-[8px] text-slate-300">Helpline: +91-9226860060</span>
             </div>
           </div>
 
@@ -228,8 +228,8 @@ export const StudentIdCard: React.FC<StudentIdCardProps> = ({ cardData, onClose 
           </div>
 
           {/* Footer Signature & Attribution */}
-          <div className="border-t border-slate-200 bg-slate-50 px-3 py-1 flex items-center justify-between text-[7.5px] text-slate-500">
-            <span>Cidco Waluj Mahanagar 1, Chh. Sambhajinagar</span>
+          <div className="border-t border-slate-200 bg-slate-50 px-3 py-1 flex items-center justify-between text-[7px] text-slate-500">
+            <span>Plot 148, Shrinand Plaza, CIDCO Waluj Mahanagar 1, Chh. Sambhajinagar</span>
             <span className="font-bold text-slate-700">Authorised Signatory</span>
           </div>
         </div>

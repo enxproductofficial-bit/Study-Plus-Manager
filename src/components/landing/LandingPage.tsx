@@ -1098,87 +1098,222 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       </section>
 
       {/* ========================================================================= */}
-      {/* 12. FOOTER                                                               */}
+      {/* 12. OFFICIAL ENTERPRENEX SOLUTIONS FOOTER                                 */}
       {/* ========================================================================= */}
-      <footer id="contact" className="border-t border-slate-200 bg-slate-900 text-slate-300 py-16">
+      <footer id="contact" className="border-t border-slate-900 bg-[#060a12] text-slate-300 pt-16 pb-12 font-sans select-none">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
-            {/* Col 1: Brand & Details */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500 text-white font-bold">
-                  <BookOpen className="h-5 w-5" />
+          <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-12 pb-12 border-b border-slate-800/80">
+            {/* Col 1: Enterprenex Solutions Brand & Direct Address (5 cols) */}
+            <div className="lg:col-span-5 space-y-4">
+              {/* Logo */}
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-tr from-cyan-500 via-blue-600 to-amber-500 p-0.5 shadow-md">
+                  <div className="flex h-full w-full items-center justify-center rounded-full bg-[#0a0f1d]">
+                    <svg viewBox="0 0 24 24" className="h-5 w-5 text-cyan-400 fill-current" aria-hidden="true">
+                      <path d="M12 2L2 22h20L12 2zm0 4.5l6.5 13H5.5L12 6.5z" />
+                    </svg>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-lg font-bold text-white">GranthSetu</span>
-                  <p className="text-[9px] uppercase tracking-wider text-emerald-400 font-bold">
-                    Abhyasika Management System
-                  </p>
-                </div>
+                <span className="text-xl font-bold tracking-tight text-white">
+                  Enterprenex Solutions
+                </span>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                The premier digital platform engineered specifically for libraries, reading rooms, and competitive exam study centres across Maharashtra and India.
+
+              {/* Tagline */}
+              <p className="text-xs text-slate-400 max-w-sm leading-relaxed">
+                Empowering businesses with innovative digital solutions and strategic consulting that drive measurable growth.
               </p>
-              <div className="text-[11px] font-semibold text-emerald-400">
-                Powered by ENTERPRENEX SOLUTION PVT LTD
+
+              {/* Contact Direct Details */}
+              <div className="space-y-2.5 text-xs text-slate-400 pt-1">
+                <a
+                  href="mailto:contact@enterprenex.solutions"
+                  className="flex items-center gap-2 hover:text-white transition-colors"
+                >
+                  <Mail className="h-4 w-4 text-slate-400 shrink-0" />
+                  <span>contact@enterprenex.solutions</span>
+                </a>
+
+                <a
+                  href="tel:+919226860060"
+                  className="flex items-center gap-2 hover:text-white transition-colors font-mono"
+                >
+                  <PhoneCall className="h-4 w-4 text-slate-400 shrink-0" />
+                  <span>+91-9226860060</span>
+                </a>
+
+                <div className="flex items-start gap-2 pt-1 leading-relaxed">
+                  <MapPin className="h-4 w-4 text-slate-400 shrink-0 mt-0.5" />
+                  <span className="text-[11.5px]">
+                    Plot No. 148, Shrinand Plaza,<br />
+                    CIDCO Waluj Mahanagar 1,<br />
+                    Chhatrapati Sambhajinagar, MH 431136
+                  </span>
+                </div>
+              </div>
+
+              {/* Social Round Buttons */}
+              <div className="flex items-center gap-2.5 pt-3">
+                <a
+                  href="https://www.linkedin.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800 text-slate-300 hover:bg-blue-600 hover:text-white transition-all text-xs font-bold"
+                  title="LinkedIn"
+                >
+                  in
+                </a>
+                <a
+                  href="https://x.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition-all text-xs font-bold"
+                  title="X (Twitter)"
+                >
+                  𝕏
+                </a>
+                <a
+                  href="https://enterprenex.solutions"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800 text-slate-300 hover:bg-emerald-600 hover:text-white transition-all text-xs font-bold"
+                  title="Official Website"
+                >
+                  🌐
+                </a>
               </div>
             </div>
 
-            {/* Col 2: Quick Links */}
-            <div className="space-y-3">
-              <h4 className="text-sm font-bold text-white">Navigation</h4>
-              <ul className="space-y-2 text-xs">
+            {/* Col 2: SERVICES (2.5 cols) */}
+            <div className="lg:col-span-2 space-y-3">
+              <h4 className="text-xs font-extrabold uppercase tracking-wider text-white">
+                SERVICES
+              </h4>
+              <ul className="space-y-2 text-xs text-slate-400">
+                <li><a href="#contact" className="hover:text-white transition-colors">AI Development</a></li>
+                <li><a href="#contact" className="hover:text-white transition-colors">Web Development</a></li>
+                <li><a href="#contact" className="hover:text-white transition-colors">Mobile App Development</a></li>
+                <li><a href="#contact" className="hover:text-white transition-colors">Backend Development</a></li>
+                <li><a href="#contact" className="hover:text-white transition-colors">SaaS Development</a></li>
+                <li><a href="#contact" className="hover:text-white transition-colors">Machine Learning</a></li>
+                <li><a href="#contact" className="hover:text-white transition-colors">DevOps</a></li>
+                <li><a href="#contact" className="hover:text-white transition-colors">Cybersecurity</a></li>
+                <li className="pt-1">
+                  <a href="#contact" className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
+                    View All Services →
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Col 3: COMPANY (2.5 cols) */}
+            <div className="lg:col-span-2 space-y-3">
+              <h4 className="text-xs font-extrabold uppercase tracking-wider text-white">
+                COMPANY
+              </h4>
+              <ul className="space-y-2 text-xs text-slate-400">
                 <li><a href="#hero" className="hover:text-white transition-colors">Home</a></li>
-                <li><a href="#features" className="hover:text-white transition-colors">Core Features</a></li>
-                <li><a href="#seat-management" className="hover:text-white transition-colors">Seat Reservation</a></li>
-                <li><a href="#how-it-works" className="hover:text-white transition-colors">How It Works</a></li>
-                <li><a href="#pricing" className="hover:text-white transition-colors">Pricing Plans</a></li>
+                <li><a href="#features" className="hover:text-white transition-colors">About Us</a></li>
+                <li><a href="#features" className="hover:text-white transition-colors">All Services</a></li>
+                <li><a href="#contact" className="hover:text-white transition-colors">Contact Us</a></li>
+                <li><a href="#security" className="hover:text-white transition-colors">Verify Credentials</a></li>
+                <li>
+                  <button onClick={() => onOpenAuth("LOGIN")} className="text-slate-400 hover:text-white transition-colors text-xs">
+                    Staff Login
+                  </button>
+                </li>
               </ul>
             </div>
 
-            {/* Col 3: Key Features */}
-            <div className="space-y-3">
-              <h4 className="text-sm font-bold text-white">Modules</h4>
-              <ul className="space-y-2 text-xs">
-                <li><a href="#features" className="hover:text-white transition-colors">Student Admission & eKYC</a></li>
-                <li><a href="#features" className="hover:text-white transition-colors">Live 48-Seat Floor Matrix</a></li>
-                <li><a href="#features" className="hover:text-white transition-colors">Automatic CR80 ID Cards</a></li>
-                <li><a href="#features" className="hover:text-white transition-colors">Dual WhatsApp Due Reminders</a></li>
-                <li><a href="#features" className="hover:text-white transition-colors">Owner Financial P&L Ledger</a></li>
+            {/* Col 4: GET IN TOUCH (2 cols) */}
+            <div className="lg:col-span-3 space-y-3">
+              <h4 className="text-xs font-extrabold uppercase tracking-wider text-white">
+                GET IN TOUCH
+              </h4>
+              <ul className="space-y-2.5 text-xs text-slate-400">
+                <li>
+                  <a
+                    href="tel:+919226860060"
+                    className="hover:text-white transition-colors flex items-center gap-1.5"
+                  >
+                    Schedule a Free Call
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="mailto:contact@enterprenex.solutions"
+                    className="hover:text-white transition-colors flex items-center gap-1.5"
+                  >
+                    Send Us an Email
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://wa.me/919226860060"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1.5"
+                  >
+                    Chat on WhatsApp
+                  </a>
+                </li>
+                <li className="pt-1 text-slate-300 font-mono font-bold">
+                  Call: <a href="tel:+919226860060" className="text-white hover:underline">+91-9226860060</a>
+                </li>
               </ul>
-            </div>
-
-            {/* Col 4: Contact & Office */}
-            <div className="space-y-3">
-              <h4 className="text-sm font-bold text-white">Enterprenex Support</h4>
-              <div className="space-y-2.5 text-xs text-slate-400">
-                <div className="flex items-start gap-2">
-                  <MapPin className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
-                  <span>Enterprenex Solution Pvt. Ltd., Cidco Waluj Mahanagar 1, Chh. Sambhajinagar, Maharashtra</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <PhoneCall className="h-4 w-4 text-emerald-400 shrink-0" />
-                  <span className="font-mono font-bold text-white">+91 9226860060</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-emerald-400 shrink-0" />
-                  <span>contact@granthsetu.in</span>
-                </div>
-              </div>
             </div>
           </div>
 
-          {/* Bottom Copyright & Policies */}
-          <div className="mt-12 border-t border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-            <p>© 2026 Enterprenex Solution Pvt. Ltd. All rights reserved.</p>
+          {/* Bottom Copyright Bar */}
+          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+            <p>© 2026 Enterprenex Solutions Pvt Ltd. All rights reserved.</p>
             <div className="flex items-center gap-6">
-              <a href="#security" className="hover:text-slate-300">Privacy Policy (DPDP 2023)</a>
-              <a href="#security" className="hover:text-slate-300">Terms & Conditions</a>
-              <a href="#security" className="hover:text-slate-300">Security Standards</a>
+              <a href="#security" className="hover:text-slate-400">Privacy Policy</a>
+              <a href="#security" className="hover:text-slate-400">Terms of Service</a>
+              <a href="#security" className="hover:text-slate-400">DPDP Act Compliance</a>
             </div>
           </div>
         </div>
       </footer>
+
+      {/* ========================================================================= */}
+      {/* 13. FLOATING ACTION WIDGETS (BOTTOM RIGHT - IDENTICAL TO REFERENCE)      */}
+      {/* ========================================================================= */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3">
+        {/* 1. Scroll To Top Button (Blue) */}
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          title="Scroll to Top"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg hover:bg-blue-500 hover:scale-110 transition-all focus:outline-none"
+        >
+          <svg viewBox="0 0 24 24" className="h-5 w-5 stroke-current stroke-2 fill-none">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+          </svg>
+        </button>
+
+        {/* 2. Direct Email Floating Button (Dark Slate) */}
+        <a
+          href="mailto:contact@enterprenex.solutions"
+          title="Send Email to Enterprenex Solutions"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-900 border border-slate-700 text-white shadow-lg hover:bg-slate-800 hover:scale-110 transition-all"
+        >
+          <Mail className="h-4 w-4" />
+        </a>
+
+        {/* 3. Direct WhatsApp Floating Button (Emerald / Green) */}
+        <a
+          href="https://wa.me/919226860060?text=Hello%20Enterprenex%20Solutions%2C%20I%20want%20to%20inquire%20about%20GranthSetu%20Abhyasika%20Management%20Software."
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Chat on WhatsApp (+91-9226860060)"
+          className="flex h-13 w-13 items-center justify-center rounded-full bg-emerald-500 text-white shadow-xl shadow-emerald-500/40 hover:bg-emerald-400 hover:scale-110 transition-all"
+        >
+          <svg viewBox="0 0 24 24" className="h-7 w-7 fill-current">
+            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.174.086.275.073.376-.044.101-.116.433-.506.549-.68.116-.173.231-.144.39-.086s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.099.824zm-3.423-14.416c-6.627 0-12 5.373-12 12 0 2.159.57 4.184 1.564 5.938l-1.657 6.056 6.222-1.632c1.704.929 3.655 1.458 5.729 1.458 6.627 0 12-5.373 12-12s-5.373-12-12-12z" />
+          </svg>
+        </a>
+      </div>
     </div>
   );
 };
+

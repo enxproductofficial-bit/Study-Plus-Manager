@@ -105,11 +105,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <Headphones className="h-5 w-5" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-semibold text-slate-300">Need Help?</p>
-            <p className="text-[10px] text-slate-400">Contact Support</p>
-            <p className="font-mono text-xs font-bold text-blue-400 tracking-wide">
-              9226860060
-            </p>
+            <p className="text-[11px] font-semibold text-slate-300">Enterprenex Support</p>
+            <p className="text-[10px] text-slate-400">Helpline & WhatsApp</p>
+            <a
+              href="tel:+919226860060"
+              className="font-mono text-xs font-bold text-blue-400 tracking-wide hover:underline"
+            >
+              +91-9226860060
+            </a>
           </div>
         </div>
       </div>
