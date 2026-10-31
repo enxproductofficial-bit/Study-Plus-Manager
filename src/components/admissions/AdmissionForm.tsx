@@ -69,9 +69,10 @@ export const AdmissionForm: React.FC = () => {
   // Form State
   const [formData, setFormData] = useState({
     fullName: "",
+    motherName: "",
     mobile: "",
     email: "",
-    course: "UPSC Civil Services",
+    course: "Competitive exam (UPSC / MPSC)",
     gender: "Male",
     address: "",
     parentName: "",
@@ -83,6 +84,9 @@ export const AdmissionForm: React.FC = () => {
     paymentMode: "UPI_MANUAL",
     initialPayment: "1500",
   });
+
+  // QR Self Admission Modal State (Photo 2 Item 1b)
+  const [showSelfQrModal, setShowSelfQrModal] = useState(false);
 
   // Verification states (CR-01 requirement)
   const [studentMobileVerified, setStudentMobileVerified] = useState(false);
@@ -222,6 +226,7 @@ export const AdmissionForm: React.FC = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           fullName: formData.fullName,
+          motherName: formData.motherName,
           mobile: formData.mobile,
           email: formData.email,
           coursePreparingFor: formData.course,
@@ -313,6 +318,7 @@ export const AdmissionForm: React.FC = () => {
                 setConfirmedData(null);
                 setFormData({
                   fullName: "",
+                  motherName: "",
                   mobile: "",
                   email: "",
                   course: "UPSC Civil Services",
@@ -460,6 +466,66 @@ export const AdmissionForm: React.FC = () => {
         </div>
       )}
 
+      {/* QR Self-Admission Modal (Photo 2 Item 1b) */}
+      {showSelfQrModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                <QrCode className="h-5 w-5 text-indigo-600" />
+                <span>Student Self-Admission QR</span>
+              </h3>
+              <button
+                onClick={() => setShowSelfQrModal(false)}
+                className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-500">
+              Students can scan this QR code with their mobile phone camera to fill out their admission form digitally.
+            </p>
+
+            {/* QR Code Container */}
+            <div className="mx-auto flex h-52 w-52 items-center justify-center rounded-2xl bg-slate-50 p-4 border-2 border-dashed border-indigo-200 dark:bg-slate-800 dark:border-slate-700">
+              <div className="flex flex-col items-center justify-center text-center">
+                <QrCode className="h-36 w-36 text-indigo-600 dark:text-indigo-400" />
+                <span className="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-300 mt-1">
+                  scan.granthsetu.in/adm
+                </span>
+              </div>
+            </div>
+
+            <div className="rounded-xl bg-indigo-50 dark:bg-indigo-950/50 p-3 text-left border border-indigo-100 dark:border-indigo-900 text-xs text-indigo-900 dark:text-indigo-200">
+              <span className="font-bold block mb-1">✓ Instant Walk-in Process:</span>
+              <ul className="space-y-1 list-disc list-inside text-[11px] text-slate-600 dark:text-slate-300">
+                <li>Student fills full name, mother&apos;s name, mobile & course.</li>
+                <li>Submission lands in your <strong>Acceptance Queue</strong>.</li>
+                <li>You review and approve with 1-click to allot a desk.</li>
+              </ul>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="flex-1 rounded-xl border border-slate-200 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200"
+              >
+                Print Standee / Poster
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowSelfQrModal(false)}
+                className="flex-1 rounded-xl bg-indigo-600 py-2.5 text-xs font-bold text-white hover:bg-indigo-700 shadow-xs"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Admission Card */}
       <div className="rounded-2xl bg-white p-6 sm:p-8 shadow-sm border border-slate-200/80 dark:border-slate-800 dark:bg-slate-900">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4 dark:border-slate-800">
@@ -468,7 +534,7 @@ export const AdmissionForm: React.FC = () => {
               <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                 Digital Admission & eKYC Verification
               </h2>
-              <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[11px] font-bold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+              <span className="rounded-full bg-indigo-50 px-2.5 py-0.5 text-[11px] font-bold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
                 Module 07
               </span>
             </div>
@@ -477,9 +543,21 @@ export const AdmissionForm: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Neon DB Connected</span>
+          <div className="flex items-center gap-3">
+            {/* QR Self-Admission Button (Photo 2 Item 1b) */}
+            <button
+              type="button"
+              onClick={() => setShowSelfQrModal(true)}
+              className="flex items-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-bold text-indigo-700 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 transition-all shadow-xs"
+            >
+              <QrCode className="h-4 w-4 text-indigo-600" />
+              <span>QR Self-Admission</span>
+            </button>
+
+            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Neon DB Connected</span>
+            </div>
           </div>
         </div>
 
@@ -497,7 +575,7 @@ export const AdmissionForm: React.FC = () => {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Step 1: Student Information */}
+            {/* Step 1: Student Information (Photo 2 Item 1a) */}
             <div className="space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
                 1. Student Information
@@ -511,10 +589,24 @@ export const AdmissionForm: React.FC = () => {
                   <input
                     required
                     type="text"
-                    placeholder="e.g. Aditya Patil"
+                    placeholder="e.g. Aditya Prakash Patil"
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-800 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-800 focus:border-indigo-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Mother&apos;s Name *
+                  </label>
+                  <input
+                    required
+                    type="text"
+                    placeholder="e.g. Sunita Patil"
+                    value={formData.motherName}
+                    onChange={(e) => setFormData({ ...formData, motherName: e.target.value })}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-800 focus:border-indigo-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                   />
                 </div>
 
@@ -530,7 +622,7 @@ export const AdmissionForm: React.FC = () => {
                       placeholder="9822000000"
                       value={formData.mobile}
                       onChange={(e) => setFormData({ ...formData, mobile: e.target.value.replace(/\D/g, "") })}
-                      className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-mono font-bold text-slate-800 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                      className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-mono font-bold text-slate-800 focus:border-indigo-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                     />
                     <button
                       type="button"
@@ -538,7 +630,7 @@ export const AdmissionForm: React.FC = () => {
                       className={`rounded-xl px-3 py-2 text-xs font-bold transition-all ${
                         studentMobileVerified
                           ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
-                          : "bg-blue-600 text-white hover:bg-blue-700"
+                          : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-xs"
                       }`}
                     >
                       {studentMobileVerified ? "Verified ✓" : "Verify OTP"}
@@ -546,17 +638,29 @@ export const AdmissionForm: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Course Dropdown (Photo 2 Item 1a: UPSC/MPSC, SSC/Banking, NEET/JEE/CET, Others) */}
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Target Exam / Course
+                    Target Exam / Course *
                   </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. UPSC Civil Services, MPSC, CA"
+                  <select
                     value={formData.course}
                     onChange={(e) => setFormData({ ...formData, course: e.target.value })}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-800 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-                  />
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-900 focus:border-indigo-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                  >
+                    <option value="Competitive exam (UPSC / MPSC)" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">
+                      1. Competitive exam (UPSC / MPSC)
+                    </option>
+                    <option value="SSC / Banking" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">
+                      2. SSC / Banking
+                    </option>
+                    <option value="NEET / JEE / CET" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">
+                      3. NEET / JEE / CET
+                    </option>
+                    <option value="Others" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">
+                      4. Others
+                    </option>
+                  </select>
                 </div>
 
                 <div>
@@ -566,11 +670,11 @@ export const AdmissionForm: React.FC = () => {
                   <select
                     value={formData.gender}
                     onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-800 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-900 focus:border-indigo-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                   >
-                    <option>Male</option>
-                    <option>Female</option>
-                    <option>Other</option>
+                    <option value="Male" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">Male</option>
+                    <option value="Female" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">Female</option>
+                    <option value="Other" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">Other</option>
                   </select>
                 </div>
               </div>

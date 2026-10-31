@@ -104,20 +104,47 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
         </div>
       )}
 
-      {/* Top Welcome Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      {/* Top Welcome Header & Quick Action Bar (Photo 1) */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200/80 dark:border-slate-800 pb-5">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
             Welcome Back, {userRole === "OWNER" ? "Owner" : "Admin"}!
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Here&apos;s what&apos;s happening at GranthSetu Abhyasika today.
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
+            Real-time operations, admissions, and financial overview for GranthSetu.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200">
-          <Calendar className="h-3.5 w-3.5 text-blue-600" />
-          <span>Wed, 29 Oct 2026</span>
+        {/* 4. Quick Action Bar (Photo 1 Requirement) */}
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => onNavigate("admission")}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-indigo-700 transition-all active:scale-95"
+          >
+            <UserPlus className="h-4 w-4" />
+            <span>Add Student</span>
+          </button>
+          <button
+            onClick={() => onNavigate("fees")}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-emerald-700 transition-all active:scale-95"
+          >
+            <IndianRupee className="h-4 w-4" />
+            <span>Collect Fees</span>
+          </button>
+          <button
+            onClick={() => onNavigate("notices")}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-blue-700 transition-all active:scale-95"
+          >
+            <Megaphone className="h-4 w-4" />
+            <span>Send Notice</span>
+          </button>
+          <button
+            onClick={() => onNavigate("reports")}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 shadow-xs hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95"
+          >
+            <FileText className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+            <span>Generate Report</span>
+          </button>
         </div>
       </div>
 
@@ -596,13 +623,24 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
                       {fee.daysOverdue}
                     </td>
                     <td className="py-2.5 px-2 text-right">
-                      <button
-                        onClick={() => handleSendReminder(fee.studentName, fee.amount)}
-                        className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-2.5 py-1 text-[11px] font-bold text-blue-600 hover:bg-blue-100 transition-all dark:bg-blue-950 dark:text-blue-300 dark:hover:bg-blue-900"
-                      >
-                        <Send className="h-3 w-3" />
-                        <span>Send Reminder</span>
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => handleSendReminder(fee.studentName, fee.amount)}
+                          title="Send Dual WhatsApp & SMS Reminder"
+                          className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2 py-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900 transition-all"
+                        >
+                          <Send className="h-3 w-3" />
+                          <span>Remind</span>
+                        </button>
+                        <button
+                          onClick={() => onNavigate("fees")}
+                          title="Collect / Record Fee Payment"
+                          className="inline-flex items-center gap-1 rounded-lg bg-indigo-600 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-indigo-700 transition-all shadow-2xs"
+                        >
+                          <IndianRupee className="h-3 w-3" />
+                          <span>Pay Fees</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -613,97 +651,81 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
       </div>
 
       {/* ========================================================================= */}
-      {/* ROW 4: TODAY'S ATTENDANCE, NOTICES & ANNOUNCEMENTS, UPCOMING EVENTS       */}
+      {/* ROW 4: SALES ENQUIRIES (CRM), NOTICES & ALERTS, EVENTS (Photo 3 Item IV)  */}
       {/* ========================================================================= */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        {/* 1. Today's Attendance (Donut) */}
+        {/* 1. Walk-in & Digital Enquiries (Photo 3 Item IV) */}
         <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-2xs dark:border-slate-800 dark:bg-slate-900 flex flex-col justify-between">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white">
-              Today&apos;s Attendance
-            </h3>
+            <div>
+              <h3 className="font-bold text-sm text-slate-900 dark:text-white">
+                Sales & Admission Enquiries
+              </h3>
+              <p className="text-[11px] text-slate-500">Walk-ins & online student leads</p>
+            </div>
             <button
-              onClick={() => onNavigate("attendance")}
-              className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-0.5"
+              onClick={() => onNavigate("enquiries")}
+              className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-0.5"
             >
-              View Details →
+              View CRM →
             </button>
           </div>
 
-          <div className="py-4 flex flex-col items-center">
-            {/* SVG Donut */}
-            <div className="relative flex items-center justify-center h-36 w-36">
-              <svg className="h-full w-full -rotate-90" viewBox="0 0 100 100">
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="38"
-                  className="stroke-slate-100 dark:stroke-slate-800"
-                  strokeWidth="12"
-                  fill="transparent"
-                />
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="38"
-                  className="stroke-rose-500"
-                  strokeWidth="12"
-                  strokeDasharray="238.7"
-                  strokeDashoffset={238.7 * (1 - 0.22)}
-                  strokeLinecap="round"
-                  fill="transparent"
-                />
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="38"
-                  className="stroke-emerald-500"
-                  strokeWidth="12"
-                  strokeDasharray="238.7"
-                  strokeDashoffset={238.7 * (1 - 0.78)}
-                  strokeLinecap="round"
-                  fill="transparent"
-                />
-              </svg>
-              <div className="absolute flex flex-col items-center justify-center">
-                <span className="text-2xl font-black text-slate-900 dark:text-white">
-                  {attendance.percentage}%
-                </span>
+          <div className="py-3 space-y-2.5">
+            <div className="flex items-center justify-between rounded-xl bg-slate-50 p-2.5 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/50">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 text-indigo-700 font-bold text-xs dark:bg-indigo-900 dark:text-indigo-200">
+                  S
+                </div>
+                <div>
+                  <h5 className="font-bold text-xs text-slate-900 dark:text-white">Sameer Deshpande</h5>
+                  <span className="text-[10px] text-slate-400">UPSC Full-Day • 9822119900</span>
+                </div>
               </div>
+              <span className="rounded-full bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-400">
+                Follow Up
+              </span>
             </div>
 
-            {/* Legends */}
-            <div className="w-full space-y-2 mt-3 px-2 text-xs">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-full bg-emerald-500" />
-                  <span className="text-slate-600 dark:text-slate-300">Present</span>
+            <div className="flex items-center justify-between rounded-xl bg-slate-50 p-2.5 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/50">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 text-blue-700 font-bold text-xs dark:bg-blue-900 dark:text-blue-200">
+                  R
                 </div>
-                <span className="font-bold text-slate-900 dark:text-white">
-                  {attendance.present}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-full bg-rose-500" />
-                  <span className="text-slate-600 dark:text-slate-300">Absent</span>
+                <div>
+                  <h5 className="font-bold text-xs text-slate-900 dark:text-white">Radhika Kulkarni</h5>
+                  <span className="text-[10px] text-slate-400">MPSC Morning • 9850223344</span>
                 </div>
-                <span className="font-bold text-slate-900 dark:text-white">
-                  {attendance.absent}
-                </span>
               </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="h-3 w-3 rounded-full bg-slate-300 dark:bg-slate-700" />
-                  <span className="text-slate-600 dark:text-slate-300">Not Marked</span>
-                </div>
-                <span className="font-bold text-slate-900 dark:text-white">
-                  {attendance.notMarked}
-                </span>
-              </div>
+              <span className="rounded-full bg-blue-100 dark:bg-blue-950/60 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:text-blue-400">
+                New Lead
+              </span>
             </div>
+
+            <div className="flex items-center justify-between rounded-xl bg-slate-50 p-2.5 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/50">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 font-bold text-xs dark:bg-emerald-900 dark:text-emerald-200">
+                  A
+                </div>
+                <div>
+                  <h5 className="font-bold text-xs text-slate-900 dark:text-white">Aniket Jadhav</h5>
+                  <span className="text-[10px] text-slate-400">Banking / SSC • 9422556677</span>
+                </div>
+              </div>
+              <span className="rounded-full bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
+                Ready to Join
+              </span>
+            </div>
+          </div>
+
+          <div className="border-t border-slate-100 pt-3 text-[11px] text-slate-400 flex items-center justify-between dark:border-slate-800">
+            <span>Total Active Enquiries: 18</span>
+            <button
+              onClick={() => onNavigate("enquiries")}
+              className="font-bold text-indigo-600 hover:underline"
+            >
+              + Add Enquiry
+            </button>
           </div>
         </div>
 

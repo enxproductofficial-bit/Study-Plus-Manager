@@ -296,6 +296,7 @@ Official Stamp:
 
 For Developer: Enterprenex Solution Pvt. Ltd.
 
+
 Authorized Signature: _____________________________________________
 Name:                 _____________________________________________
 Designation:          Project Lead / Technical Director

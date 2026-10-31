@@ -22,10 +22,11 @@ import {
 
 export const LibrarySettings: React.FC = () => {
   const [activeSection, setActiveSection] = useState<
-    "profile" | "shifts" | "plans" | "staff" | "payments" | "notifications"
+    "profile" | "shifts" | "plans" | "staff" | "payments" | "notifications" | "appearance"
   >("profile");
 
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [themeMode, setThemeMode] = useState<"light" | "dark" | "system">("light");
 
   // Form State
   const [profile, setProfile] = useState({
@@ -45,6 +46,17 @@ export const LibrarySettings: React.FC = () => {
     e.preventDefault();
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 2500);
+  };
+
+  const handleApplyTheme = (mode: "light" | "dark" | "system") => {
+    setThemeMode(mode);
+    if (mode === "dark") {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
   };
 
   return (
@@ -79,6 +91,7 @@ export const LibrarySettings: React.FC = () => {
             { id: "staff", label: "Staff Accounts (RBAC)", icon: UserCheck },
             { id: "payments", label: "Razorpay Gateway Webhooks", icon: CreditCard },
             { id: "notifications", label: "Dual WhatsApp & SMS", icon: Bell },
+            { id: "appearance", label: "Theme & Dark Mode", icon: Settings },
           ].map((item) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
@@ -320,9 +333,9 @@ export const LibrarySettings: React.FC = () => {
           )}
 
           {activeSection === "notifications" && (
-            <div className="rounded-2xl bg-white p-6 shadow-xs border border-slate-200/80 space-y-4">
-              <div className="border-b border-slate-100 pb-3">
-                <h3 className="font-bold text-sm text-slate-900">Dual WhatsApp & SMS Dispatch Rules</h3>
+            <div className="rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-xs border border-slate-200/80 dark:border-slate-800 space-y-4">
+              <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
+                <h3 className="font-bold text-sm text-slate-900 dark:text-white">Dual WhatsApp & SMS Dispatch Rules</h3>
                 <p className="text-xs text-slate-400 mt-0.5">CR-01 Mandate: Simultaneous routing to both Student and Parent numbers</p>
               </div>
 
@@ -333,11 +346,63 @@ export const LibrarySettings: React.FC = () => {
                   "Instant Payment Capture & PDF Receipt Link",
                   "Seat Renewal Reminder (Dispatched 3 days prior to seat expiry)",
                 ].map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-2.5 rounded-xl bg-slate-50 p-3 border border-slate-200/80 text-slate-700">
+                  <div key={idx} className="flex items-center gap-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 p-3 border border-slate-200/80 dark:border-slate-700/60 text-slate-700 dark:text-slate-300">
                     <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
                     <span>{item}</span>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {activeSection === "appearance" && (
+            <div className="rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-xs border border-slate-200/80 dark:border-slate-800 space-y-5">
+              <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
+                <h3 className="font-bold text-sm text-slate-900 dark:text-white">Theme & Display Settings (Photo 3 Item VI)</h3>
+                <p className="text-xs text-slate-400 mt-0.5">Manually select between Light Mode and Dark Mode</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <button
+                  type="button"
+                  onClick={() => handleApplyTheme("light")}
+                  className={`flex flex-col items-start p-4 rounded-2xl border-2 text-left transition-all ${
+                    themeMode === "light"
+                      ? "border-indigo-600 bg-indigo-50/60 text-indigo-950"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+                  }`}
+                >
+                  <span className="font-bold text-sm block mb-1">☀ Light Mode</span>
+                  <span className="text-slate-500 text-[11px]">Clean white cards, soft borders, and clear readable typography.</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleApplyTheme("dark")}
+                  className={`flex flex-col items-start p-4 rounded-2xl border-2 text-left transition-all ${
+                    themeMode === "dark"
+                      ? "border-indigo-600 bg-slate-800 text-white"
+                      : "border-slate-200 bg-slate-900 text-white hover:border-slate-700"
+                  }`}
+                >
+                  <span className="font-bold text-sm block mb-1">☾ Dark Navy Mode</span>
+                  <span className="text-slate-400 text-[11px]">Dark background with deep slate navy cards for reduced eye strain.</span>
+                </button>
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
+                <span className="text-xs text-slate-500">Theme preference is remembered in your browser.</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (confirm("Are you sure you want to log out?")) {
+                      window.location.href = "/";
+                    }
+                  }}
+                  className="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-xs font-bold text-rose-700 hover:bg-rose-100 transition"
+                >
+                  Sign Out from Account
+                </button>
               </div>
             </div>
           )}
@@ -346,3 +411,4 @@ export const LibrarySettings: React.FC = () => {
     </div>
   );
 };
+

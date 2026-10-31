@@ -323,3 +323,4 @@ export const EnquiryCrm: React.FC<EnquiryCrmProps> = ({ onConvertToAdmission }) 
     </div>
   );
 };
+

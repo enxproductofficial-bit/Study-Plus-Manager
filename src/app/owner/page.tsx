@@ -22,7 +22,7 @@ export default function OwnerPortalPage() {
   const [currentBranch, setCurrentBranch] = useState("Main Branch - Shivaji Nagar");
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#f4f7fb] font-sans text-slate-800">
+    <div className="flex h-screen w-full overflow-hidden bg-slate-100/70 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100">
       {/* Sidebar Navigation */}
       <Sidebar
         currentTab={currentTab}
@@ -41,39 +41,26 @@ export default function OwnerPortalPage() {
           onLogout={() => {
             window.location.href = "/";
           }}
-          onSwitchToLanding={() => {
-            window.location.href = "/";
-          }}
         />
 
         {/* Scrollable Viewport */}
         <main className="flex-1 overflow-y-auto p-5 md:p-7">
           <div className="mx-auto max-w-7xl">
-            {/* Owner Top Banner with Public Page Link */}
-            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-indigo-100 bg-indigo-50/70 p-3.5 text-xs text-indigo-900 shadow-xs">
+            {/* Owner Top Status Indicator */}
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-indigo-100 bg-white dark:bg-slate-900 dark:border-slate-800 p-3.5 text-xs text-slate-700 dark:text-slate-300 shadow-xs">
               <div className="flex items-center gap-2">
                 <span className="rounded-full bg-indigo-600 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-xs">
                   OWNER PORTAL
                 </span>
                 <span>
-                  Full administrative and financial P&L visibility for <strong>{currentBranch}</strong>.
+                  Administrative & Financial Overview for <strong>{currentBranch}</strong>
                 </span>
               </div>
-              <div className="flex items-center gap-3">
-                <Link
-                  href="/l/studyplus-shivajinagar"
-                  target="_blank"
-                  className="inline-flex items-center gap-1 font-bold text-indigo-700 hover:text-indigo-900 hover:underline"
-                >
-                  View Public Website <ExternalLink className="h-3 w-3" />
-                </Link>
-                <span className="text-slate-300">|</span>
-                <Link
-                  href="/super-admin"
-                  className="font-semibold text-slate-600 hover:text-slate-900"
-                >
-                  Super Admin
-                </Link>
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Live Sync Active
+                </span>
               </div>
             </div>
 

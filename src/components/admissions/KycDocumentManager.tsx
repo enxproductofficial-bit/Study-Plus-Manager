@@ -218,3 +218,4 @@ export const KycDocumentManager: React.FC = () => {
     </div>
   );
 };
+
