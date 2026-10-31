@@ -9,25 +9,18 @@ export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const branchCode = searchParams.get("branchCode") || "BR-01";
+    const branchCode = searchParams.get("branchCode");
 
-    let branch = await prisma.branch.findUnique({
-      where: { code: branchCode },
-    });
-
-    if (!branch) {
-      branch = await prisma.branch.findFirst();
-    }
-
-    if (!branch) {
-      return NextResponse.json({ requests: [] });
+    const whereClause: any = { status: "PENDING" };
+    if (branchCode) {
+      const branch = await prisma.branch.findUnique({ where: { code: branchCode } });
+      if (branch) {
+        whereClause.branchId = branch.id;
+      }
     }
 
     const requests = await prisma.admissionRequest.findMany({
-      where: {
-        branchId: branch.id,
-        status: "PENDING",
-      },
+      where: whereClause,
       orderBy: { createdAt: "desc" },
     });
 
@@ -72,6 +65,7 @@ export async function POST(request: Request) {
       gender,
       parentName,
       parentMobile,
+      course,
       coursePreparingFor,
       preferredShift,
       aadhaarLast4,
@@ -87,7 +81,9 @@ export async function POST(request: Request) {
     const cleanMobile = mobile.replace(/\D/g, "").slice(-10);
     const cleanParentMobile = parentMobile.replace(/\D/g, "").slice(-10);
 
-    let branch = await prisma.branch.findFirst();
+    let branch = body.branchCode
+      ? await prisma.branch.findUnique({ where: { code: body.branchCode } })
+      : (await prisma.branch.findUnique({ where: { code: "BR-01" } })) || (await prisma.branch.findFirst());
     if (!branch) {
       return NextResponse.json({ error: "Branch not found" }, { status: 404 });
     }
@@ -102,7 +98,7 @@ export async function POST(request: Request) {
         gender: gender || "Male",
         parentName: parentName?.trim() || null,
         parentMobile: cleanParentMobile,
-        coursePreparingFor: coursePreparingFor || "Competitive exam (UPSC / MPSC)",
+        coursePreparingFor: course || coursePreparingFor || "Competitive exam (UPSC / MPSC)",
         preferredShift: preferredShift || "Morning Shift",
         aadhaarLast4: aadhaarLast4?.slice(-4) || "8821",
         status: "PENDING",
@@ -172,9 +168,16 @@ export async function PATCH(request: Request) {
         ? await prisma.feePlan.findUnique({ where: { id: feePlanId } })
         : await prisma.feePlan.findFirst({ where: { branchId: req.branchId } });
 
-      const studentCount = await prisma.student.count({ where: { branchId: req.branchId } });
-      const studentRegNo = `GS-2026-${String(studentCount + 1).padStart(4, "0")}`;
-      const qrCodeToken = crypto.randomBytes(16).toString("hex");
+      // Generate collision-free studentRegNo
+      const currentYear = new Date().getFullYear();
+      let regCount = await prisma.student.count();
+      let studentRegNo = `GS-${currentYear}-${String(regCount + 1).padStart(4, "0")}`;
+      while (await prisma.student.findUnique({ where: { studentRegNo } })) {
+        regCount++;
+        studentRegNo = `GS-${currentYear}-${String(regCount + 1).padStart(4, "0")}`;
+      }
+
+      const qrCodeToken = `gs_qr_${crypto.randomBytes(12).toString("hex")}`;
 
       // Transaction to create student, guardian, allocation and fee
       const newStudent = await prisma.$transaction(async (tx) => {
