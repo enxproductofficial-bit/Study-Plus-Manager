@@ -56,7 +56,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   onOpenApp,
   currentUser,
 }) => {
-  const { lang, setLang } = useTranslation();
+  const { lang, setLang, t } = useTranslation();
 
   // Interactive Seat Map Demo State
   const [selectedShift, setSelectedShift] = useState<string>("Morning");
@@ -97,16 +97,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       <div className="bg-gradient-to-r from-navy-900 via-blue-950 to-navy-900 border-b border-blue-500/20 px-4 py-2 text-center text-xs font-semibold text-blue-200">
         <div className="mx-auto flex max-w-7xl items-center justify-center gap-2 flex-wrap">
           <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/20 border border-blue-400/30 px-2.5 py-0.5 text-[10px] uppercase font-bold tracking-wider text-blue-300">
-            <Sparkles className="h-3 w-3 text-blue-400" /> GranthSetu v2.0
+            <Sparkles className="h-3 w-3 text-blue-400" /> {t("announcement_tag")}
           </span>
           <span className="text-slate-300">
-            Official Abhyasika Operating System by Enterprenex Solutions • Live Shift Lock & Instant WhatsApp Receipts.
+            {t("announcement_text")}
           </span>
           <button
             onClick={() => onOpenAuth("SIGNUP")}
             className="inline-flex items-center gap-1 font-bold text-blue-300 hover:text-white underline transition-colors"
           >
-            Claim 14-Day Free Trial <ArrowRight className="h-3 w-3 inline" />
+            {t("claim_trial")} <ArrowRight className="h-3 w-3 inline" />
           </button>
         </div>
       </div>
@@ -138,13 +138,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
           {/* Desktop Nav Links */}
           <nav className="hidden lg:flex items-center gap-7 text-xs font-semibold text-slate-300">
-            <a href="#features" className="hover:text-blue-400 transition-colors">Superpowers</a>
-            <a href="#seat-matrix" className="hover:text-blue-400 transition-colors">Live Seat Matrix</a>
-            <a href="#modules" className="hover:text-blue-400 transition-colors">12 Modules</a>
-            <a href="#preview" className="hover:text-blue-400 transition-colors">Role Portals</a>
-            <a href="#pricing" className="hover:text-blue-400 transition-colors">Pricing</a>
-            <a href="#faq" className="hover:text-blue-400 transition-colors">FAQ</a>
-            <a href="#contact" className="hover:text-blue-400 transition-colors">Support</a>
+            <a href="#features" className="hover:text-blue-400 transition-colors">{t("nav_superpowers")}</a>
+            <a href="#seat-matrix" className="hover:text-blue-400 transition-colors">{t("nav_seat_matrix")}</a>
+            <a href="#modules" className="hover:text-blue-400 transition-colors">{t("nav_modules")}</a>
+            <a href="#preview" className="hover:text-blue-400 transition-colors">{t("nav_roles")}</a>
+            <a href="#pricing" className="hover:text-blue-400 transition-colors">{t("nav_pricing")}</a>
+            <a href="#faq" className="hover:text-blue-400 transition-colors">{t("nav_faq")}</a>
+            <a href="#contact" className="hover:text-blue-400 transition-colors">{t("nav_support")}</a>
           </nav>
 
           {/* Right Action Bar */}
@@ -195,7 +195,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 onClick={onOpenApp}
                 className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-blue-600/25 hover:from-blue-500 hover:to-indigo-500 transition-all"
               >
-                <span>Open Dashboard</span>
+                <span>{t("open_dashboard")}</span>
                 <ArrowRight className="h-3.5 w-3.5 text-white" />
               </button>
             ) : (
@@ -204,13 +204,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   onClick={() => onOpenAuth("LOGIN")}
                   className="rounded-xl px-3.5 py-2 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all"
                 >
-                  Sign In
+                  {t("sign_in")}
                 </button>
                 <Link
                   href="/register-library"
                   className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:from-blue-500 hover:to-indigo-500 hover:scale-[1.02] transition-all"
                 >
-                  <span>Register Centre</span>
+                  <span>{t("register_centre")}</span>
                   <ArrowRight className="h-3.5 w-3.5 text-white" />
                 </Link>
               </>
@@ -236,12 +236,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               {/* Trust Badge */}
               <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-950/40 px-3.5 py-1 text-xs font-semibold text-blue-300 backdrop-blur-md">
                 <span className="flex h-2 w-2 rounded-full bg-blue-400 animate-pulse" />
-                <span>Next-Gen Operating System for Abhyasikas</span>
+                <span>{t("hero_tag")}</span>
               </div>
 
               {/* Main Headline */}
               <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl leading-[1.12]">
-                Manage Your Study Centre Smarter with{" "}
+                {t("hero_title_prefix")}{" "}
                 <span className="bg-gradient-to-r from-blue-400 via-sky-300 to-indigo-300 bg-clip-text text-transparent">
                   GranthSetu
                 </span>
@@ -249,7 +249,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
               {/* High-Impact Subtitle */}
               <p className="text-base sm:text-lg text-slate-300 leading-relaxed font-normal max-w-xl">
-                The all-in-one platform built for Indian reading rooms. Automate student admissions, live shift-locked seat reservations, UPI fee collection, dual WhatsApp alerts, and owner P&L — with zero double-booking.
+                {t("hero_desc")}
               </p>
 
               {/* Action Buttons */}
@@ -259,7 +259,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3.5 text-sm font-black text-white shadow-xl shadow-blue-600/30 hover:from-blue-500 hover:to-indigo-500 transition-all hover:scale-[1.02]"
                 >
                   <Building className="h-4 w-4 text-white" />
-                  <span>Register Your Centre</span>
+                  <span>{t("btn_register_centre")}</span>
                   <ArrowRight className="h-4 w-4 text-white" />
                 </Link>
 
@@ -267,7 +267,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   href="#seat-matrix"
                   className="flex items-center gap-2 rounded-2xl border border-slate-700 bg-slate-900/80 px-6 py-3.5 text-sm font-bold text-slate-200 shadow-sm hover:border-blue-500/50 hover:bg-slate-800 transition-all"
                 >
-                  <span>Explore Live Seat Map</span>
+                  <span>{t("btn_explore_seat_map")}</span>
                   <ChevronDown className="h-4 w-4 text-blue-400" />
                 </a>
               </div>
@@ -275,7 +275,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               {/* Quick Role Tour Bar */}
               <div className="pt-2">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
-                  Explore Connected SaaS Portals:
+                  {t("explore_portals")}
                 </span>
                 <div className="flex flex-wrap items-center gap-2">
                   <Link
@@ -283,28 +283,28 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     className="inline-flex items-center gap-1.5 rounded-xl border border-blue-500/30 bg-blue-950/40 px-3 py-1.5 text-[11px] font-bold text-blue-300 hover:bg-blue-900/40 transition"
                   >
                     <Building className="h-3.5 w-3.5 text-blue-400" />
-                    Owner Dashboard
+                    {t("portal_owner")}
                   </Link>
                   <Link
                     href="/staff"
                     className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-500/30 bg-indigo-950/40 px-3 py-1.5 text-[11px] font-bold text-indigo-300 hover:bg-indigo-900/40 transition"
                   >
                     <UserCheck className="h-3.5 w-3.5 text-indigo-400" />
-                    Staff Counter
+                    {t("portal_staff")}
                   </Link>
                   <Link
                     href="/student"
                     className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900/60 px-3 py-1.5 text-[11px] font-bold text-slate-300 hover:bg-slate-800 transition"
                   >
                     <Users className="h-3.5 w-3.5 text-slate-400" />
-                    Student Self-Portal
+                    {t("portal_student")}
                   </Link>
                   <Link
                     href="/super-admin"
                     className="inline-flex items-center gap-1.5 rounded-xl border border-blue-600/30 bg-blue-950/20 px-3 py-1.5 text-[11px] font-bold text-blue-400 hover:bg-blue-900/30 transition"
                   >
                     <ShieldCheck className="h-3.5 w-3.5 text-blue-400" />
-                    Platform Admin
+                    {t("portal_admin")}
                   </Link>
                 </div>
               </div>
@@ -313,15 +313,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               <div className="pt-4 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs font-semibold text-slate-400">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-blue-400 shrink-0" />
-                  <span>UIDAI Aadhaar Safe</span>
+                  <span>{t("badge_uidai")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-blue-400 shrink-0" />
-                  <span>Razorpay Instant UPI</span>
+                  <span>{t("badge_razorpay")}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-blue-400 shrink-0" />
-                  <span>Dual WhatsApp Alerts</span>
+                  <span>{t("badge_whatsapp")}</span>
                 </div>
               </div>
             </div>
@@ -349,7 +349,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   <div className="flex items-center gap-2">
                     <span className="flex items-center gap-1 rounded-full bg-blue-500/15 border border-blue-500/30 px-2 py-0.5 text-[10px] font-bold text-blue-300">
                       <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-ping" />
-                      Live Sync Active
+                      {t("mock_sync")}
                     </span>
                   </div>
                 </div>
@@ -379,7 +379,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     {/* KPI 1 */}
                     <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-2.5 text-left">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-medium text-slate-400">Total Students</span>
+                        <span className="text-[10px] font-medium text-slate-400">{t("total_students")}</span>
                         <Users className="h-3.5 w-3.5 text-blue-400" />
                       </div>
                       <p className="text-lg font-black text-white mt-1">248</p>
@@ -389,7 +389,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     {/* KPI 2 */}
                     <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-2.5 text-left">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-medium text-slate-400">Occupancy</span>
+                        <span className="text-[10px] font-medium text-slate-400">{t("occupied_seats")}</span>
                         <Armchair className="h-3.5 w-3.5 text-sky-400" />
                       </div>
                       <p className="text-lg font-black text-white mt-1">87%</p>
@@ -399,7 +399,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     {/* KPI 3 */}
                     <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-2.5 text-left">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-medium text-slate-400">Revenue</span>
+                        <span className="text-[10px] font-medium text-slate-400">{t("fees_collected")}</span>
                         <IndianRupee className="h-3.5 w-3.5 text-blue-400" />
                       </div>
                       <p className="text-lg font-black text-white mt-1">₹3,28,500</p>
@@ -409,7 +409,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     {/* KPI 4 */}
                     <div className="rounded-2xl border border-rose-900/40 bg-rose-950/20 p-2.5 text-left">
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-medium text-rose-300">Pending Dues</span>
+                        <span className="text-[10px] font-medium text-rose-300">{t("pending_fees")}</span>
                         <Clock className="h-3.5 w-3.5 text-rose-400" />
                       </div>
                       <p className="text-lg font-black text-rose-200 mt-1">₹76,200</p>
@@ -422,7 +422,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
                       <div className="flex items-center gap-1.5">
                         <span className="h-2 w-2 rounded-full bg-blue-400" />
-                        <span className="text-xs font-bold text-slate-200">AC Hall Floor Map (48 Desks)</span>
+                        <span className="text-xs font-bold text-slate-200">{t("mock_title")}</span>
                       </div>
                       
                       {/* Shift Switcher inside mock */}
@@ -437,7 +437,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                                 : "text-slate-400 hover:text-white"
                             }`}
                           >
-                            {sh}
+                            {sh === "Morning" ? t("shift_morning") : sh === "Afternoon" ? t("shift_afternoon") : sh === "Evening" ? t("shift_evening") : t("shift_24hr")}
                           </button>
                         ))}
                       </div>
@@ -462,7 +462,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                           >
                             <span className="text-[10px] font-mono font-black">{s.num}</span>
                             <span className="text-[8px] opacity-80 truncate max-w-full font-medium">
-                              {s.user ? s.user.split(" ")[0] : "Vacant"}
+                              {s.user ? s.user.split(" ")[0] : t("legend_vacant")}
                             </span>
                           </div>
                         );
@@ -472,13 +472,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     {/* Status Legend */}
                     <div className="mt-2.5 pt-2 border-t border-slate-900 flex items-center justify-between text-[9px] font-medium text-slate-400">
                       <span className="flex items-center gap-1">
-                        <span className="h-1.5 w-1.5 rounded-full bg-blue-400" /> Vacant
+                        <span className="h-1.5 w-1.5 rounded-full bg-blue-400" /> {t("legend_vacant")}
                       </span>
                       <span className="flex items-center gap-1">
-                        <span className="h-1.5 w-1.5 rounded-full bg-rose-500" /> Booked
+                        <span className="h-1.5 w-1.5 rounded-full bg-rose-500" /> {t("legend_booked")}
                       </span>
                       <span className="flex items-center gap-1">
-                        <span className="h-1.5 w-1.5 rounded-full bg-amber-400" /> 24-Hr Lock
+                        <span className="h-1.5 w-1.5 rounded-full bg-amber-400" /> {t("legend_lock")}
                       </span>
                     </div>
                   </div>
@@ -490,7 +490,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     <QrCode className="h-4 w-4" />
                   </div>
                   <div className="text-left pr-2">
-                    <p className="text-[11px] font-bold text-white">QR Self-Admission</p>
+                    <p className="text-[11px] font-bold text-white">{t("qr_self_admission")}</p>
                     <p className="text-[9px] text-blue-300">Rohit J. (MPSC) • Allotted Desk S-08</p>
                   </div>
                 </div>
@@ -500,7 +500,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     <IndianRupee className="h-4 w-4" />
                   </div>
                   <div className="text-left pr-2">
-                    <p className="text-[11px] font-bold text-white">WhatsApp Receipt Sent</p>
+                    <p className="text-[11px] font-bold text-white">{t("send_whatsapp")}</p>
                     <p className="text-[9px] text-blue-300">₹1,500 UPI Dispatched Automatically</p>
                   </div>
                 </div>
@@ -520,19 +520,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           <div className="grid grid-cols-2 gap-6 sm:grid-cols-4 text-center">
             <div className="space-y-1">
               <p className="text-3xl sm:text-4xl font-black text-white">50+</p>
-              <p className="text-xs font-semibold uppercase tracking-wider text-blue-400">Study Centres Digitized</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-blue-400">{t("stat_centres")}</p>
             </div>
             <div className="space-y-1">
               <p className="text-3xl sm:text-4xl font-black text-white">15,000+</p>
-              <p className="text-xs font-semibold uppercase tracking-wider text-blue-400">Active Students</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-blue-400">{t("stat_students")}</p>
             </div>
             <div className="space-y-1">
               <p className="text-3xl sm:text-4xl font-black text-white">₹1.2 Cr+</p>
-              <p className="text-xs font-semibold uppercase tracking-wider text-blue-400">Fees Collected via UPI</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-blue-400">{t("stat_fees")}</p>
             </div>
             <div className="space-y-1">
               <p className="text-3xl sm:text-4xl font-black text-white">99.9%</p>
-              <p className="text-xs font-semibold uppercase tracking-wider text-blue-400">Zero Double Booking</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-blue-400">{t("stat_uptime")}</p>
             </div>
           </div>
         </div>
@@ -613,10 +613,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               Modern Enterprise Architecture
             </span>
             <h2 className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">
-              6 Built-In Superpowers for Abhyasika Owners
+              {t("superpowers_heading")}
             </h2>
             <p className="mt-3 text-sm text-slate-400">
-              Engineered strictly for study rooms, library halls, and competitive exam abhyasikas.
+              {t("superpowers_sub")}
             </p>
           </div>
 
@@ -726,10 +726,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               Interactive Room / Seat Grid
             </span>
             <h2 className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">
-              Zero Double-Booking Seat Reservation
+              {t("seat_matrix_heading")}
             </h2>
             <p className="mt-3 text-sm text-slate-400">
-              GranthSetu allocates seats shift-wise (Morning, Afternoon, Evening, and 24-Hour). The database engine strictly prevents assigning the same desk to overlapping shifts.
+              {t("seat_matrix_sub")}
             </p>
 
             {/* Shift Filter Buttons */}
@@ -744,7 +744,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                       : "text-slate-400 hover:text-white"
                   }`}
                 >
-                  {shift} {shift === "24 Hours" ? "Full Access" : "Shift"}
+                  {shift === "Morning" ? t("shift_morning") : shift === "Afternoon" ? t("shift_afternoon") : shift === "Evening" ? t("shift_evening") : t("shift_24hr")}
                 </button>
               ))}
             </div>
@@ -1112,7 +1112,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               Verified Study Centres
             </span>
             <h2 className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">
-              Trusted by 50+ Abhyasika Owners
+              {t("testimonials_heading")}
             </h2>
             <p className="mt-3 text-sm text-slate-400">
               Hear directly from study centre directors across Pune, Chhatrapati Sambhajinagar, and Maharashtra.
@@ -1203,10 +1203,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             Simple & Transparent Pricing
           </span>
           <h2 className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">
-            Choose the Right Plan for Your Abhyasika
+            {t("pricing_heading")}
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-400">
-            No hidden setup fees. Free updates included. 14-day free trial on all plans.
+            {t("pricing_sub")}
           </p>
 
           <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-3 text-left">
@@ -1319,7 +1319,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               Got Questions?
             </span>
             <h2 className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">
-              Frequently Asked Questions
+              {t("faq_heading")}
             </h2>
             <p className="mt-3 text-sm text-slate-400">
               Everything you need to know about setting up GranthSetu for your study room.
@@ -1385,11 +1385,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <Sparkles className="h-3 w-3 text-blue-400" /> Ready to Upgrade Your Study Centre?
           </span>
           <h2 className="text-3xl font-black tracking-tight text-white sm:text-5xl leading-tight">
-            Stop Managing on Paper. <br />
-            Run Your Abhyasika on Autopilot.
+            {t("final_cta_heading")}
           </h2>
           <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto">
-            Join 50+ leading study rooms across Maharashtra. Get started in less than 15 minutes with our 14-day free trial.
+            {t("final_cta_sub")}
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
