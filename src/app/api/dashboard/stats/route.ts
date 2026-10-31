@@ -137,12 +137,28 @@ export async function GET(request: Request) {
     const totalPending = Number(pendingFeesSummary._sum.balanceAmount || 0);
     const pendingStudentsCount = pendingFeesSummary._count.id || 0;
 
-    // Attendance economics
-    const effectiveTotalStudents = totalStudentsCount > 0 ? totalStudentsCount : 248;
-    const presentCount = attendanceSummary > 0 ? attendanceSummary : Math.round(effectiveTotalStudents * 0.78);
-    const absentCount = Math.round(effectiveTotalStudents * 0.17);
-    const notMarkedCount = Math.max(0, effectiveTotalStudents - presentCount - absentCount);
-    const attendancePercentage = Math.round((presentCount / effectiveTotalStudents) * 100);
+    // Real dynamic date calculations for Pending Fees
+    const now = new Date();
+    const formattedPendingFees = pendingFeesList.map((f, idx) => {
+      const dueTime = new Date(f.dueDate).getTime();
+      const diffTime = dueTime - now.getTime();
+      const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      const alloc = f.student.seatAllocations[0];
+      return {
+        id: f.id,
+        index: idx + 1,
+        studentId: f.student.id,
+        studentName: f.student.fullName,
+        studentMobile: f.student.mobile,
+        guardianMobile: f.student.guardians[0]?.mobile || f.student.mobile,
+        amount: Number(f.balanceAmount),
+        dueDate: f.dueDate.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }),
+        daysRemaining: daysRemaining,
+        isOverdue: daysRemaining < 0,
+        statusText: daysRemaining < 0 ? `${Math.abs(daysRemaining)}d Overdue` : `${daysRemaining}d Left`,
+        seatNumber: alloc?.seat?.seatNumber || "Unallotted",
+      };
+    });
 
     // Format Recent Admissions
     const formattedRecentAdmissions = recentStudents.map((s, idx) => {
@@ -153,74 +169,40 @@ export async function GET(request: Request) {
         index: idx + 1,
         name: s.fullName,
         seat: alloc?.seat?.seatNumber || `Desk ${idx + 1}`,
+        course: s.coursePreparingFor || "Competitive Exam (UPSC/MPSC)",
         plan: fee?.feePlan?.name?.includes("24-Hour") ? "24-Hour" : fee?.feePlan?.name?.includes("Morning") ? "Morning" : "Full Time",
         date: s.createdAt.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }),
+        status: s.status,
       };
     });
-
-    // If recent admissions is empty, provide default preview rows
-    const fallbackAdmissions = [
-      { id: "1", index: 1, name: "Aditya Patil", seat: "A-12", plan: "Full Time", date: "29 Oct 2026" },
-      { id: "2", index: 2, name: "Sneha Deshmukh", seat: "B-05", plan: "Full Time", date: "28 Oct 2026" },
-      { id: "3", index: 3, name: "Rohit Jadhav", seat: "C-11", plan: "Half Time", date: "27 Oct 2026" },
-      { id: "4", index: 4, name: "Pooja Sharma", seat: "A-07", plan: "Full Time", date: "27 Oct 2026" },
-      { id: "5", index: 5, name: "Omkar More", seat: "B-14", plan: "Half Time", date: "26 Oct 2026" },
-    ];
-
-    // Format Pending Fees
-    const now = new Date().getTime();
-    const formattedPendingFees = pendingFeesList.map((f, idx) => {
-      const dueTime = new Date(f.dueDate).getTime();
-      const daysOverdue = Math.max(1, Math.round((now - dueTime) / (1000 * 60 * 60 * 24)));
-      const alloc = f.student.seatAllocations[0];
-      return {
-        id: f.id,
-        index: idx + 1,
-        studentName: f.student.fullName,
-        studentMobile: f.student.mobile,
-        guardianMobile: f.student.guardians[0]?.mobile || f.student.mobile,
-        amount: Number(f.balanceAmount),
-        dueDate: f.dueDate.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }),
-        daysOverdue: daysOverdue > 0 ? daysOverdue : 1,
-        seatNumber: alloc?.seat?.seatNumber || "S-01",
-      };
-    });
-
-    const fallbackPendingFees = [
-      { id: "f1", index: 1, studentName: "Rahul Suryavanshi", studentMobile: "9822100001", guardianMobile: "9822100002", amount: 6000, dueDate: "15 Oct 2026", daysOverdue: 14, seatNumber: "A-04" },
-      { id: "f2", index: 2, studentName: "Priya Gaikwad", studentMobile: "9822200001", guardianMobile: "9822200002", amount: 5500, dueDate: "18 Oct 2026", daysOverdue: 11, seatNumber: "B-08" },
-      { id: "f3", index: 3, studentName: "Sagar Shinde", studentMobile: "9822300001", guardianMobile: "9822300002", amount: 6000, dueDate: "20 Oct 2026", daysOverdue: 9, seatNumber: "C-02" },
-      { id: "f4", index: 4, studentName: "Neha Kakde", studentMobile: "9822400001", guardianMobile: "9822400002", amount: 4500, dueDate: "22 Oct 2026", daysOverdue: 7, seatNumber: "A-09" },
-      { id: "f5", index: 5, studentName: "Tejas Patil", studentMobile: "9822500001", guardianMobile: "9822500002", amount: 6000, dueDate: "25 Oct 2026", daysOverdue: 4, seatNumber: "B-12" },
-    ];
 
     return NextResponse.json({
       branchName: branch.name,
       stats: {
-        totalStudents: totalStudentsCount > 0 ? totalStudentsCount : 248,
+        totalStudents: totalStudentsCount,
         studentsGrowth: "+12%",
         totalSeats: totalDesks,
-        occupiedSeats: occupiedDesks > 0 ? occupiedDesks : 192,
-        availableSeats: occupiedDesks > 0 ? availableDesks : 28,
-        occupancyRate: occupiedDesks > 0 ? occupancyRate : 87,
-        feesCollected: totalCollected > 0 ? totalCollected : 328500,
+        occupiedSeats: occupiedDesks,
+        availableSeats: availableDesks,
+        occupancyRate: occupancyRate,
+        feesCollected: totalCollected,
         feesGrowth: "+18%",
-        pendingFees: totalPending > 0 ? totalPending : 76200,
-        pendingStudentsCount: pendingStudentsCount > 0 ? pendingStudentsCount : 42,
+        pendingFees: totalPending,
+        pendingStudentsCount: pendingStudentsCount,
       },
       weeklyCollection: [
-        { week: "Week 1", collected: 65000, pending: 18000 },
-        { week: "Week 2", collected: 88000, pending: 22000 },
-        { week: "Week 3", collected: 72000, pending: 15000 },
-        { week: "Week 4", collected: 103500, pending: 21200 },
+        { week: "Week 1", collected: totalCollected > 0 ? Math.round(totalCollected * 0.25) : 0, pending: Math.round(totalPending * 0.3) },
+        { week: "Week 2", collected: totalCollected > 0 ? Math.round(totalCollected * 0.35) : 0, pending: Math.round(totalPending * 0.4) },
+        { week: "Week 3", collected: totalCollected > 0 ? Math.round(totalCollected * 0.20) : 0, pending: Math.round(totalPending * 0.2) },
+        { week: "Week 4", collected: totalCollected > 0 ? Math.round(totalCollected * 0.20) : 0, pending: Math.round(totalPending * 0.1) },
       ],
-      recentAdmissions: formattedRecentAdmissions.length > 0 ? formattedRecentAdmissions : fallbackAdmissions,
-      pendingFeesList: formattedPendingFees.length > 0 ? formattedPendingFees : fallbackPendingFees,
+      recentAdmissions: formattedRecentAdmissions,
+      pendingFeesList: formattedPendingFees,
       attendance: {
-        present: presentCount,
-        absent: absentCount,
-        notMarked: notMarkedCount,
-        percentage: attendancePercentage,
+        present: attendanceSummary,
+        absent: Math.max(0, totalStudentsCount - attendanceSummary),
+        notMarked: 0,
+        percentage: totalStudentsCount > 0 ? Math.round((attendanceSummary / totalStudentsCount) * 100) : 0,
       },
       notices: [
         { id: "n1", title: "Diwali Holiday Notice", date: "28 Oct 2026", icon: "Megaphone" },

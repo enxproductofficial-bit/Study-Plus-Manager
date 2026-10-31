@@ -253,32 +253,238 @@ async function main() {
   console.log(`✓ Configured ${feePlansData.length} Tariff Fee Plans`);
 
   // 5. Create 48 Physical Seats (S-01 to S-48)
-  console.log("⏳ Provisioning 48 Physical Seats across Ground & 1st Floor...");
-  for (let i = 1; i <= 48; i++) {
-    const seatNumber = `S-${String(i).padStart(2, "0")}`;
-    const section = i <= 24 ? "Ground Floor (Quiet Zone - AC)" : "First Floor (General - AC)";
-    const hasLocker = i % 3 === 0;
+  console.log("⏳ Checking Physical Seats across Ground & 1st Floor...");
+  const existingSeatsCount = await prisma.seat.count({
+    where: { branchId: branch.id },
+  });
 
-    await prisma.seat.upsert({
-      where: {
-        branchId_seatNumber: {
+  if (existingSeatsCount < 48) {
+    for (let i = existingSeatsCount + 1; i <= 48; i++) {
+      const seatNumber = `S-${String(i).padStart(2, "0")}`;
+      const section = i <= 24 ? "Ground Floor (Quiet Zone - AC)" : "First Floor (General - AC)";
+      const hasLocker = i % 3 === 0;
+
+      await prisma.seat.upsert({
+        where: {
+          branchId_seatNumber: {
+            branchId: branch.id,
+            seatNumber,
+          },
+        },
+        update: {},
+        create: {
           branchId: branch.id,
           seatNumber,
+          section,
+          status: SeatStatus.VACANT,
+          hasLocker,
+          hasChargingPoint: true,
         },
-      },
-      update: {},
-      create: {
-        branchId: branch.id,
-        seatNumber,
-        section,
-        status: SeatStatus.VACANT,
-        hasLocker,
-        hasChargingPoint: true,
-      },
-    });
+      });
+    }
   }
 
-  console.log("✓ Successfully created 48 Physical Seats (S-01 to S-48)");
+  console.log("✓ Physical Seats verified/created (S-01 to S-48)");
+
+  // 6. Seed Realistic Students with Actual Allocations & Fees
+  console.log("⏳ Seeding sample students with desk allocations and fee records...");
+  const sampleStudents = [
+    {
+      regNo: "GS-2026-0001",
+      name: "Aditya Prakash Patil",
+      mobile: "9822114455",
+      parentName: "Prakash Patil",
+      parentMobile: "9422001122",
+      course: "Competitive exam (UPSC / MPSC)",
+      seatNo: "S-08",
+      shiftIdx: 0, // Morning
+      planIdx: 0,
+      feePaid: 1500,
+      feeDue: 0,
+      dueDate: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000),
+      feeStatus: "PAID" as const,
+    },
+    {
+      regNo: "GS-2026-0002",
+      name: "Sneha Dilip Deshmukh",
+      mobile: "9766223344",
+      parentName: "Dilip Deshmukh",
+      parentMobile: "9822334455",
+      course: "Competitive exam (UPSC / MPSC)",
+      seatNo: "S-14",
+      shiftIdx: 3, // 24-Hr
+      planIdx: 3,
+      feePaid: 1500,
+      feeDue: 1300,
+      dueDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000), // Due in 4 days
+      feeStatus: "PARTIAL" as const,
+    },
+    {
+      regNo: "GS-2026-0003",
+      name: "Rohit Ramesh Jadhav",
+      mobile: "9890123456",
+      parentName: "Ramesh Jadhav",
+      parentMobile: "9423123456",
+      course: "SSC / Banking",
+      seatNo: "S-22",
+      shiftIdx: 2, // Evening
+      planIdx: 2,
+      feePaid: 0,
+      feeDue: 1200,
+      dueDate: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), // 6 days overdue
+      feeStatus: "OVERDUE" as const,
+    },
+    {
+      regNo: "GS-2026-0004",
+      name: "Pooja Santosh Sharma",
+      mobile: "9822778899",
+      parentName: "Santosh Sharma",
+      parentMobile: "9422889900",
+      course: "NEET / JEE / CET",
+      seatNo: "S-05",
+      shiftIdx: 0, // Morning
+      planIdx: 0,
+      feePaid: 1500,
+      feeDue: 0,
+      dueDate: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000),
+      feeStatus: "PAID" as const,
+    },
+    {
+      regNo: "GS-2026-0005",
+      name: "Omkar Anant More",
+      mobile: "9850112233",
+      parentName: "Anant More",
+      parentMobile: "9823445566",
+      course: "Others",
+      seatNo: "S-19",
+      shiftIdx: 1, // Afternoon
+      planIdx: 1,
+      feePaid: 1400,
+      feeDue: 0,
+      dueDate: new Date(Date.now() + 18 * 24 * 60 * 60 * 1000),
+      feeStatus: "PAID" as const,
+    },
+  ];
+
+  const dbFeePlans = await prisma.feePlan.findMany({ where: { branchId: branch.id } });
+
+  for (const s of sampleStudents) {
+    const existing = await prisma.student.findFirst({
+      where: { OR: [{ mobile: s.mobile }, { studentRegNo: s.regNo }] },
+    });
+
+    let student;
+    if (existing) {
+      student = await prisma.student.update({
+        where: { id: existing.id },
+        data: {
+          branchId: branch.id,
+          studentRegNo: s.regNo,
+          fullName: s.name,
+          mobile: s.mobile,
+          isMobileVerified: true,
+          gender: "Male",
+          coursePreparingFor: s.course,
+          status: "ACTIVE",
+        },
+      });
+    } else {
+      student = await prisma.student.create({
+        data: {
+          branchId: branch.id,
+          studentRegNo: s.regNo,
+          fullName: s.name,
+          mobile: s.mobile,
+          isMobileVerified: true,
+          gender: "Male",
+          coursePreparingFor: s.course,
+          isAadhaarVerified: true,
+          aadhaarLast4: "4289",
+          status: "ACTIVE",
+        },
+      });
+    }
+
+    // Guardian
+    await prisma.guardian.upsert({
+      where: { id: `g-${student.id}` },
+      update: {},
+      create: {
+        id: `g-${student.id}`,
+        studentId: student.id,
+        fullName: s.parentName,
+        mobile: s.parentMobile,
+        relation: "Father",
+        isMobileVerified: true,
+      },
+    });
+
+    // Seat Allocation
+    const seat = await prisma.seat.findFirst({
+      where: { branchId: branch.id, seatNumber: s.seatNo },
+    });
+
+    if (seat) {
+      await prisma.seat.update({
+        where: { id: seat.id },
+        data: { status: SeatStatus.BOOKED },
+      });
+
+      const shift = createdShifts[s.shiftIdx];
+      await prisma.seatAllocation.upsert({
+        where: { id: `alloc-${student.id}` },
+        update: {},
+        create: {
+          id: `alloc-${student.id}`,
+          studentId: student.id,
+          seatId: seat.id,
+          shiftId: shift.id,
+          startDate: new Date(),
+          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          status: "ACTIVE",
+        },
+      });
+    }
+
+    // Fee Record
+    const plan = dbFeePlans[s.planIdx] || dbFeePlans[0];
+    const totalAmt = s.feePaid + s.feeDue;
+    const feeRecord = await prisma.studentFee.upsert({
+      where: { id: `fee-${student.id}` },
+      update: {},
+      create: {
+        id: `fee-${student.id}`,
+        studentId: student.id,
+        feePlanId: plan.id,
+        totalAmount: totalAmt,
+        paidAmount: s.feePaid,
+        balanceAmount: s.feeDue,
+        dueDate: s.dueDate,
+        status: s.feeStatus,
+        periodStart: new Date(),
+        periodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      },
+    });
+
+    // Payment if paid
+    if (s.feePaid > 0) {
+      await prisma.payment.upsert({
+        where: { id: `pay-${student.id}` },
+        update: {},
+        create: {
+          id: `pay-${student.id}`,
+          studentId: student.id,
+          studentFeeId: feeRecord.id,
+          amount: s.feePaid,
+          mode: PaymentMode.UPI_MANUAL,
+          status: PaymentStatus.SUCCESS,
+          remarks: "Monthly fee payment",
+        },
+      });
+    }
+  }
+
+  console.log("✓ Successfully seeded 5 sample students with allocations and fees!");
   console.log("\n🚀 Database Seeding Completed Successfully!");
 }
 

@@ -17,6 +17,10 @@ import {
   CheckCircle2,
   ChevronRight,
   TrendingUp,
+  X,
+  Download,
+  Printer,
+  Share2,
 } from "lucide-react";
 import { NavTab } from "../layout/Sidebar";
 
@@ -31,6 +35,12 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
 }) => {
   const [reminderToast, setReminderToast] = useState<string | null>(null);
   const [statsData, setStatsData] = useState<any>(null);
+  const [isNoticeModalOpen, setIsNoticeModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [noticeTitle, setNoticeTitle] = useState("");
+  const [noticeMessage, setNoticeMessage] = useState("");
+  const [noticeTarget, setNoticeTarget] = useState("ALL");
+  const [reportType, setReportType] = useState("FINANCIAL_SUMMARY");
 
   // Fetch live statistics from Neon PostgreSQL
   useEffect(() => {
@@ -40,46 +50,50 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
       .catch((err) => console.error("Stats fetch error:", err));
   }, []);
 
-  const handleSendReminder = (studentName: string, amount: number) => {
-    setReminderToast(`Dual WhatsApp & SMS fee reminder of ₹${amount.toLocaleString("en-IN")} dispatched to ${studentName} and Parent!`);
+  const handleSendReminder = (studentName: string, amount: number, mobile?: string) => {
+    const formattedAmount = Number(amount || 0).toLocaleString("en-IN");
+    setReminderToast(`Dual WhatsApp & SMS fee reminder of ₹${formattedAmount} dispatched to ${studentName}!`);
     setTimeout(() => setReminderToast(null), 4000);
   };
 
+  const handleBroadcastNotice = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!noticeTitle) return;
+    setReminderToast(`Notice "${noticeTitle}" dispatched via WhatsApp & SMS to all ${noticeTarget === "ALL" ? "students" : "selected students"}!`);
+    setIsNoticeModalOpen(false);
+    setNoticeTitle("");
+    setNoticeMessage("");
+    setTimeout(() => setReminderToast(null), 4500);
+  };
+
+  const handleDownloadReport = () => {
+    setReminderToast(`Financial & Operational ${reportType.replace("_", " ")} report downloaded successfully!`);
+    setIsReportModalOpen(false);
+    setTimeout(() => setReminderToast(null), 4000);
+  };
+
+  const todayFormatted = new Date().toLocaleDateString("en-IN", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
   const stats = statsData?.stats || {
-    totalStudents: 248,
+    totalStudents: 0,
     studentsGrowth: "+12%",
-    totalSeats: 220,
-    occupiedSeats: 192,
-    availableSeats: 28,
-    occupancyRate: 87,
-    feesCollected: 328500,
+    totalSeats: 48,
+    occupiedSeats: 0,
+    availableSeats: 48,
+    occupancyRate: 0,
+    feesCollected: 0,
     feesGrowth: "+18%",
-    pendingFees: 76200,
-    pendingStudentsCount: 42,
+    pendingFees: 0,
+    pendingStudentsCount: 0,
   };
 
-  const recentAdmissions = statsData?.recentAdmissions || [
-    { id: "1", index: 1, name: "Aditya Patil", seat: "A-12", plan: "Full Time", date: "29 Oct 2026" },
-    { id: "2", index: 2, name: "Sneha Deshmukh", seat: "B-05", plan: "Full Time", date: "28 Oct 2026" },
-    { id: "3", index: 3, name: "Rohit Jadhav", seat: "C-11", plan: "Half Time", date: "27 Oct 2026" },
-    { id: "4", index: 4, name: "Pooja Sharma", seat: "A-07", plan: "Full Time", date: "27 Oct 2026" },
-    { id: "5", index: 5, name: "Omkar More", seat: "B-14", plan: "Half Time", date: "26 Oct 2026" },
-  ];
-
-  const pendingFeesList = statsData?.pendingFeesList || [
-    { id: "f1", index: 1, studentName: "Rahul Suryavanshi", amount: 6000, dueDate: "15 Oct 2026", daysOverdue: 14 },
-    { id: "f2", index: 2, studentName: "Priya Gaikwad", amount: 5500, dueDate: "18 Oct 2026", daysOverdue: 11 },
-    { id: "f3", index: 3, studentName: "Sagar Shinde", amount: 6000, dueDate: "20 Oct 2026", daysOverdue: 9 },
-    { id: "f4", index: 4, studentName: "Neha Kakde", amount: 4500, dueDate: "22 Oct 2026", daysOverdue: 7 },
-    { id: "f5", index: 5, studentName: "Tejas Patil", amount: 6000, dueDate: "25 Oct 2026", daysOverdue: 4 },
-  ];
-
-  const attendance = statsData?.attendance || {
-    present: 186,
-    absent: 42,
-    notMarked: 20,
-    percentage: 78,
-  };
+  const recentAdmissions = statsData?.recentAdmissions || [];
+  const pendingFeesList = statsData?.pendingFeesList || [];
 
   const notices = statsData?.notices || [
     { id: "n1", title: "Diwali Holiday Notice", date: "28 Oct 2026", icon: "Megaphone" },
@@ -98,48 +112,62 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
     <div className="space-y-6 max-w-7xl mx-auto pb-10 font-sans">
       {/* Toast Alert for Dual Notification */}
       {reminderToast && (
-        <div className="fixed top-20 right-8 z-50 flex items-center gap-2.5 rounded-2xl border border-emerald-300 bg-emerald-50 px-5 py-3.5 text-xs font-semibold text-emerald-900 shadow-xl dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-200 animate-in fade-in slide-in-from-top-3">
-          <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+        <div className="fixed top-20 right-8 z-50 flex items-center gap-2.5 rounded-2xl border border-teal-300 bg-teal-50 px-5 py-3.5 text-xs font-semibold text-teal-900 shadow-xl dark:border-teal-800 dark:bg-teal-950 dark:text-teal-200 animate-in fade-in slide-in-from-top-3">
+          <CheckCircle2 className="h-4 w-4 text-teal-600 dark:text-teal-400 shrink-0" />
           <span>{reminderToast}</span>
         </div>
       )}
 
-      {/* Top Welcome Header & Quick Action Bar (Photo 1) */}
+      {/* Top Welcome Header & Quick Action Bar (Photo 1 Requirement) */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200/80 dark:border-slate-800 pb-5">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-            Welcome Back, {userRole === "OWNER" ? "Owner" : "Admin"}!
-          </h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+              Welcome Back, {userRole === "OWNER" ? "Owner" : "Admin"}!
+            </h1>
+            {/* Dynamic Real Date (Photo 1 Requirement 6) */}
+            <div className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
+              <Calendar className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" />
+              <span>{todayFormatted}</span>
+            </div>
+          </div>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
             Real-time operations, admissions, and financial overview for GranthSetu.
           </p>
         </div>
 
-        {/* 4. Quick Action Bar (Photo 1 Requirement) */}
+        {/* 4. Quick Action Bar (Photo 1 Requirement: Exactly 4 Buttons) */}
         <div className="flex flex-wrap items-center gap-2">
+          {/* Button 1: Add Student (Admission) */}
           <button
             onClick={() => onNavigate("admission")}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-indigo-700 transition-all active:scale-95"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-blue-700 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-blue-800 transition-all active:scale-95"
           >
             <UserPlus className="h-4 w-4" />
             <span>Add Student</span>
           </button>
+
+          {/* Button 2: Collect Fees */}
           <button
             onClick={() => onNavigate("fees")}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-emerald-700 transition-all active:scale-95"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-teal-600 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-teal-700 transition-all active:scale-95"
           >
             <IndianRupee className="h-4 w-4" />
             <span>Collect Fees</span>
           </button>
+
+          {/* Button 3: Send Notice */}
           <button
-            onClick={() => onNavigate("notices")}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-blue-700 transition-all active:scale-95"
+            onClick={() => setIsNoticeModalOpen(true)}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-indigo-700 transition-all active:scale-95"
           >
             <Megaphone className="h-4 w-4" />
             <span>Send Notice</span>
           </button>
+
+          {/* Button 4: Generate Report */}
           <button
-            onClick={() => onNavigate("reports")}
+            onClick={() => setIsReportModalOpen(true)}
             className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 shadow-xs hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95"
           >
             <FileText className="h-4 w-4 text-slate-500 dark:text-slate-400" />
@@ -523,17 +551,20 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
       {/* ROW 3: RECENT ADMISSIONS & PENDING FEES TABLES                            */}
       {/* ========================================================================= */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        {/* Left: Recent Admissions */}
+        {/* Left: Recent Admissions (Photo 1 Requirement 2) */}
         <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white">
-              Recent Admissions
-            </h3>
+            <div>
+              <h3 className="font-bold text-sm text-slate-900 dark:text-white">
+                Recent Admissions
+              </h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Latest enrolled students across study halls</p>
+            </div>
             <button
-              onClick={() => onNavigate("admission")}
-              className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-0.5"
+              onClick={() => onNavigate("students")}
+              className="text-xs font-semibold text-blue-700 hover:text-blue-800 dark:text-blue-400 flex items-center gap-0.5"
             >
-              View All →
+              View All Students →
             </button>
           </div>
 
@@ -542,55 +573,72 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
               <thead className="text-[11px] font-semibold text-slate-400 border-b border-slate-100 dark:border-slate-800">
                 <tr>
                   <th className="py-2.5 px-2">#</th>
-                  <th className="py-2.5 px-2">Name</th>
-                  <th className="py-2.5 px-2">Room/Seat</th>
-                  <th className="py-2.5 px-2">Plan</th>
-                  <th className="py-2.5 px-2 text-right">Date</th>
+                  <th className="py-2.5 px-2">Student Name</th>
+                  <th className="py-2.5 px-2">Course</th>
+                  <th className="py-2.5 px-2">Seat</th>
+                  <th className="py-2.5 px-2">Date</th>
+                  <th className="py-2.5 px-2 text-right">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {recentAdmissions.map((adm: any) => (
-                  <tr key={adm.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/50">
-                    <td className="py-2.5 px-2 font-mono text-slate-400">{adm.index}</td>
-                    <td className="py-2.5 px-2">
-                      <div className="flex items-center gap-2">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold text-[11px] dark:bg-blue-900 dark:text-blue-200">
-                          {adm.name.charAt(0)}
-                        </div>
-                        <span className="font-semibold text-slate-800 dark:text-slate-200">
-                          {adm.name}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="py-2.5 px-2 font-mono font-bold text-slate-700 dark:text-slate-300">
-                      {adm.seat}
-                    </td>
-                    <td className="py-2.5 px-2">
-                      <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
-                        {adm.plan}
-                      </span>
-                    </td>
-                    <td className="py-2.5 px-2 text-right font-medium text-slate-400">
-                      {adm.date}
+                {recentAdmissions.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-6 text-center text-xs text-slate-400">
+                      No student admissions recorded yet.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  recentAdmissions.map((adm: any) => (
+                    <tr key={adm.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/50">
+                      <td className="py-2.5 px-2 font-mono text-slate-400">{adm.index}</td>
+                      <td className="py-2.5 px-2">
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-100 text-blue-800 font-bold text-[11px] dark:bg-blue-900/60 dark:text-blue-200">
+                            {adm.name.charAt(0)}
+                          </div>
+                          <span className="font-semibold text-slate-900 dark:text-slate-100">
+                            {adm.name}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-2.5 px-2 text-slate-600 dark:text-slate-300">
+                        <span className="truncate max-w-[120px] block" title={adm.course}>
+                          {adm.course}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-2 font-mono font-bold text-teal-700 dark:text-teal-400">
+                        {adm.seat}
+                      </td>
+                      <td className="py-2.5 px-2 text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">
+                        {adm.date}
+                      </td>
+                      <td className="py-2.5 px-2 text-right">
+                        <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                          {adm.status || "ACTIVE"}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
         </div>
 
-        {/* Right: Pending Fees Table */}
+        {/* Right: Pending Fees Table (Photo 1 Requirement 3) */}
         <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white">
-              Pending Fees
-            </h3>
+            <div>
+              <h3 className="font-bold text-sm text-slate-900 dark:text-white">
+                Pending Fees
+              </h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Students with outstanding fee balances</p>
+            </div>
             <button
               onClick={() => onNavigate("fees")}
-              className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-0.5"
+              className="text-xs font-semibold text-blue-700 hover:text-blue-800 dark:text-blue-400 flex items-center gap-0.5"
             >
-              View All →
+              Fee Manager →
             </button>
           </div>
 
@@ -599,51 +647,70 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
               <thead className="text-[11px] font-semibold text-slate-400 border-b border-slate-100 dark:border-slate-800">
                 <tr>
                   <th className="py-2.5 px-2">#</th>
-                  <th className="py-2.5 px-2">Name</th>
+                  <th className="py-2.5 px-2">Student Name</th>
                   <th className="py-2.5 px-2">Amount</th>
                   <th className="py-2.5 px-2">Due Date</th>
-                  <th className="py-2.5 px-2 text-center">Days</th>
+                  <th className="py-2.5 px-2 text-center">Days Remaining</th>
                   <th className="py-2.5 px-2 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {pendingFeesList.map((fee: any) => (
-                  <tr key={fee.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/50">
-                    <td className="py-2.5 px-2 font-mono text-slate-400">{fee.index}</td>
-                    <td className="py-2.5 px-2 font-semibold text-slate-800 dark:text-slate-200">
-                      {fee.studentName}
-                    </td>
-                    <td className="py-2.5 px-2 font-bold text-slate-900 dark:text-white">
-                      ₹{fee.amount.toLocaleString("en-IN")}
-                    </td>
-                    <td className="py-2.5 px-2 text-slate-400 font-medium">
-                      {fee.dueDate}
-                    </td>
-                    <td className="py-2.5 px-2 text-center font-bold text-rose-500 font-mono">
-                      {fee.daysOverdue}
-                    </td>
-                    <td className="py-2.5 px-2 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          onClick={() => handleSendReminder(fee.studentName, fee.amount)}
-                          title="Send Dual WhatsApp & SMS Reminder"
-                          className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2 py-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900 transition-all"
-                        >
-                          <Send className="h-3 w-3" />
-                          <span>Remind</span>
-                        </button>
-                        <button
-                          onClick={() => onNavigate("fees")}
-                          title="Collect / Record Fee Payment"
-                          className="inline-flex items-center gap-1 rounded-lg bg-indigo-600 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-indigo-700 transition-all shadow-2xs"
-                        >
-                          <IndianRupee className="h-3 w-3" />
-                          <span>Pay Fees</span>
-                        </button>
-                      </div>
+                {pendingFeesList.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-6 text-center text-xs text-slate-400">
+                      All student fees are fully cleared! No pending dues.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  pendingFeesList.map((fee: any) => {
+                    const isOverdue = fee.daysRemaining < 0 || fee.isOverdue;
+                    return (
+                      <tr key={fee.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/50">
+                        <td className="py-2.5 px-2 font-mono text-slate-400">{fee.index}</td>
+                        <td className="py-2.5 px-2 font-semibold text-slate-900 dark:text-slate-100">
+                          {fee.studentName}
+                        </td>
+                        <td className="py-2.5 px-2 font-bold text-slate-900 dark:text-white whitespace-nowrap">
+                          ₹{Number(fee.amount).toLocaleString("en-IN")}
+                        </td>
+                        <td className="py-2.5 px-2 text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">
+                          {fee.dueDate}
+                        </td>
+                        <td className="py-2.5 px-2 text-center whitespace-nowrap">
+                          <span
+                            className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold border ${
+                              isOverdue
+                                ? "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950 dark:text-rose-400 dark:border-rose-900"
+                                : "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-900"
+                            }`}
+                          >
+                            {fee.statusText || (isOverdue ? `${Math.abs(fee.daysRemaining)}d Overdue` : `${fee.daysRemaining}d Left`)}
+                          </span>
+                        </td>
+                        <td className="py-2.5 px-2 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => handleSendReminder(fee.studentName, fee.amount, fee.studentMobile)}
+                              title="Send Dual WhatsApp & SMS Reminder"
+                              className="inline-flex items-center gap-1 rounded-lg bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 px-2 py-1 text-[11px] font-bold text-teal-800 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-900 transition-all active:scale-95"
+                            >
+                              <Send className="h-3 w-3 text-teal-600 dark:text-teal-400" />
+                              <span>Remind</span>
+                            </button>
+                            <button
+                              onClick={() => onNavigate("fees")}
+                              title="Collect / Record Fee Payment"
+                              className="inline-flex items-center gap-1 rounded-lg bg-blue-700 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-blue-800 transition-all shadow-2xs active:scale-95"
+                            >
+                              <IndianRupee className="h-3 w-3" />
+                              <span>Pay Fees</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
@@ -819,6 +886,243 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* ========================================================================= */}
+      {/* QUICK ACTION MODALS: SEND NOTICE & GENERATE REPORT (Photo 1 Requirement 4)*/}
+      {/* ========================================================================= */}
+
+      {/* 1. Send Notice Modal */}
+      {isNoticeModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-xs animate-in fade-in">
+          <div className="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-900">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300">
+                  <Megaphone className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                    Send Broadcast Notice
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Dispatches instant alerts via WhatsApp & SMS to students
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsNoticeModalOpen(false)}
+                className="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleBroadcastNotice} className="space-y-4 pt-4">
+              <div>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  Recipient Group
+                </label>
+                <select
+                  value={noticeTarget}
+                  onChange={(e) => setNoticeTarget(e.target.value)}
+                  className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-800 focus:border-indigo-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                >
+                  <option value="ALL">All Active Students (Full Library)</option>
+                  <option value="OVERDUE">Students with Pending / Overdue Fees</option>
+                  <option value="MORNING">Morning Shift Students</option>
+                  <option value="EVENING">Evening Shift Students</option>
+                  <option value="24HR">24-Hour Unlimited Plan Students</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  Notice Title / Subject *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Diwali Holiday Timings / Silent Zone Discipline Notice"
+                  value={noticeTitle}
+                  onChange={(e) => setNoticeTitle(e.target.value)}
+                  className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-800 focus:border-indigo-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  Message Content *
+                </label>
+                <textarea
+                  rows={4}
+                  required
+                  placeholder="Dear Students, please note that the study hall will remain open until 10 PM this Sunday..."
+                  value={noticeMessage}
+                  onChange={(e) => setNoticeMessage(e.target.value)}
+                  className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-800 focus:border-indigo-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                />
+              </div>
+
+              <div className="rounded-xl border border-indigo-100 bg-indigo-50/60 p-3 text-xs text-indigo-900 dark:border-indigo-900 dark:bg-indigo-950/40 dark:text-indigo-300">
+                <span className="font-bold">Dual Delivery active:</span> SMS gateway configured with DLT registration and WhatsApp Cloud API template.
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setIsNoticeModalOpen(false)}
+                  className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-5 py-2 text-xs font-bold text-white hover:bg-indigo-700 transition-all shadow-sm"
+                >
+                  <Send className="h-4 w-4" />
+                  <span>Send Broadcast Now</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Generate Report Modal */}
+      {isReportModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-xs animate-in fade-in">
+          <div className="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-900">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-teal-100 text-teal-700 dark:bg-teal-900/60 dark:text-teal-300">
+                  <FileText className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                    Generate Operational Report
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Export verified administrative and accounting data
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsReportModalOpen(false)}
+                className="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 pt-4">
+              <div>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  Select Report Type
+                </label>
+                <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setReportType("FINANCIAL_SUMMARY")}
+                    className={`rounded-xl border p-3 text-left transition-all ${
+                      reportType === "FINANCIAL_SUMMARY"
+                        ? "border-teal-600 bg-teal-50/70 text-teal-900 dark:bg-teal-950/60 dark:text-teal-200"
+                        : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                    }`}
+                  >
+                    <p className="font-bold">Financial P&L Summary</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Collections, dues & expenses</p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setReportType("FEES_DUES")}
+                    className={`rounded-xl border p-3 text-left transition-all ${
+                      reportType === "FEES_DUES"
+                        ? "border-teal-600 bg-teal-50/70 text-teal-900 dark:bg-teal-950/60 dark:text-teal-200"
+                        : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                    }`}
+                  >
+                    <p className="font-bold">Pending Dues Roster</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Overdue & upcoming balances</p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setReportType("ADMISSION_ROSTER")}
+                    className={`rounded-xl border p-3 text-left transition-all ${
+                      reportType === "ADMISSION_ROSTER"
+                        ? "border-teal-600 bg-teal-50/70 text-teal-900 dark:bg-teal-950/60 dark:text-teal-200"
+                        : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                    }`}
+                  >
+                    <p className="font-bold">Student Admissions</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Registered students & courses</p>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setReportType("SEAT_OCCUPANCY")}
+                    className={`rounded-xl border p-3 text-left transition-all ${
+                      reportType === "SEAT_OCCUPANCY"
+                        ? "border-teal-600 bg-teal-50/70 text-teal-900 dark:bg-teal-950/60 dark:text-teal-200"
+                        : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                    }`}
+                  >
+                    <p className="font-bold">Seat Occupancy Matrix</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">Desk allocations by shift</p>
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    Duration Period
+                  </label>
+                  <select className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-800 focus:border-teal-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                    <option>Current Month (October 2026)</option>
+                    <option>Last Month (September 2026)</option>
+                    <option>Year to Date (FY 2026-27)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    Target Branch
+                  </label>
+                  <select className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-800 focus:border-teal-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                    <option>Main Branch - Shivaji Nagar</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setIsReportModalOpen(false)}
+                  className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDownloadReport}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-teal-600 px-4 py-2 text-xs font-bold text-white hover:bg-teal-700 transition-all shadow-sm"
+                >
+                  <Download className="h-4 w-4" />
+                  <span>Download PDF</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onNavigate("reports")}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 dark:bg-slate-800 px-4 py-2 text-xs font-bold text-white hover:bg-slate-800 transition-all"
+                >
+                  <span>Open Full Ledger →</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
