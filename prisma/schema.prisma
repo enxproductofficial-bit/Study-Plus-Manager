@@ -194,6 +194,7 @@ model Branch {
   expenses        Expense[]
   receipts        Receipt[]
   enquiries       Enquiry[]
+  admissionRequests AdmissionRequest[]
 
   @@map("branches")
 }
@@ -229,6 +230,7 @@ model Student {
   branchId            String
   studentRegNo        String             @unique // e.g., STU-2026-0001
   fullName            String
+  motherName          String?            // Required in GranthSetu digital admission
   mobile              String             @unique
   isMobileVerified    Boolean            @default(false)
   email               String?
@@ -281,6 +283,35 @@ model Guardian {
   @@index([studentId])
   @@index([mobile])
   @@map("guardians")
+}
+
+// ----------------------------------------------------
+// 2B. QR SELF-ADMISSION REQUEST QUEUE (Photo 2 Item 1B)
+// ----------------------------------------------------
+
+model AdmissionRequest {
+  id                  String             @id @default(uuid())
+  branchId            String
+  fullName            String
+  motherName          String?
+  mobile              String
+  email               String?
+  gender              String?
+  parentName          String?
+  parentMobile        String?
+  coursePreparingFor  String?
+  preferredShift      String?
+  aadhaarLast4        String?            @db.VarChar(4)
+  status              String             @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  rejectionReason     String?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  branch              Branch             @relation(fields: [branchId], references: [id])
+
+  @@index([branchId])
+  @@index([status])
+  @@map("admission_requests")
 }
 
 // ----------------------------------------------------

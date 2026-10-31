@@ -77,28 +77,8 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
   const [feeFilter, setFeeFilter] = useState("ALL");
 
   // Pending QR Self Admissions Queue (Photo 2 Item 1b)
-  const [pendingSelfAdmissions, setPendingSelfAdmissions] = useState<PendingSelfAdmission[]>([
-    {
-      id: "self-01",
-      fullName: "Vikram R. Shinde",
-      motherName: "Mangala Shinde",
-      mobile: "9822334411",
-      parentMobile: "9422110022",
-      course: "Competitive exam (UPSC / MPSC)",
-      appliedAt: "Just now (via QR Code)",
-      gender: "Male",
-    },
-    {
-      id: "self-02",
-      fullName: "Pooja Santosh Kulkarni",
-      motherName: "Rekha Kulkarni",
-      mobile: "9850667788",
-      parentMobile: "9823004455",
-      course: "NEET / JEE / CET",
-      appliedAt: "10 mins ago (via QR Code)",
-      gender: "Female",
-    },
-  ]);
+  const [pendingSelfAdmissions, setPendingSelfAdmissions] = useState<PendingSelfAdmission[]>([]);
+  const [showQrFlyerModal, setShowQrFlyerModal] = useState(false);
 
   // Modals & Active Selections
   const [selectedStudentForProfile, setSelectedStudentForProfile] = useState<StudentRecord | null>(null);
@@ -114,46 +94,27 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
     setTimeout(() => setActionAlert(null), 4000);
   };
 
-  // Fetch students from backend
+  // Fetch students & pending self-admissions from database
   const fetchStudents = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch("/api/dashboard/stats");
-      const json = await res.json();
-      if (json.success && json.recentAdmissions) {
-        // Map admissions data
-        const mapped: StudentRecord[] = json.recentAdmissions.map((s: any, idx: number) => ({
-          id: s.id || `stu-${idx}`,
-          studentRegNo: s.studentRegNo || `GS-2026-${String(idx + 1).padStart(4, "0")}`,
-          fullName: s.fullName || "Admitted Student",
-          mobile: s.mobile || "9876543210",
-          email: s.email || "student@granthsetu.in",
-          coursePreparingFor: s.coursePreparingFor || "Competitive Exams (UPSC/MPSC)",
-          joinedDate: s.createdAt || new Date().toISOString(),
-          status: (s.status as any) || "ACTIVE",
-          aadhaarLast4: s.aadhaarLast4 || "4289",
-          isAadhaarVerified: true,
-          qrCodeToken: s.qrCodeToken || `QR-TOKEN-${idx}`,
-          parentName: "Guardian Patil",
-          parentMobile: "9822001122",
-          motherName: "Sunita Patil",
-          seatNumber: s.seatAllocations?.[0]?.seat?.seatNumber || `S-${String((idx % 48) + 1).padStart(2, "0")}`,
-          shiftName: s.seatAllocations?.[0]?.shift?.name || "Morning Shift (06:00 - 14:00)",
-          feePlanName: s.fees?.[0]?.feePlan?.name || "Monthly Morning Shift (AC)",
-          feeStatus: (s.fees?.[0]?.status as any) || "PAID",
-          balanceAmount: Number(s.fees?.[0]?.balanceAmount) || 0,
-          monthlyFees: [
-            { month: "Aug 2026", amount: 1800, status: "PAID" },
-            { month: "Sep 2026", amount: 1800, status: "PAID" },
-            { month: "Oct 2026", amount: 1800, status: "PAID" },
-            { month: "Nov 2026", amount: 1800, status: "DUE" },
-            { month: "Dec 2026", amount: 1800, status: "DUE" },
-          ],
-        }));
-        setStudents(mapped);
+      const [stuRes, reqRes] = await Promise.all([
+        fetch("/api/students"),
+        fetch("/api/admissions/requests"),
+      ]);
+
+      const stuData = await stuRes.json();
+      const reqData = await reqRes.json();
+
+      if (stuData.success && stuData.students) {
+        setStudents(stuData.students);
+      }
+
+      if (reqData.success && reqData.requests) {
+        setPendingSelfAdmissions(reqData.requests);
       }
     } catch (e) {
-      console.error(e);
+      console.error("StudentManager fetch error:", e);
     } finally {
       setIsLoading(false);
     }
@@ -178,51 +139,57 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
   });
 
   // Toggle account status (Photo 2 Item 1d)
-  const handleToggleStatus = (id: string, current: string) => {
+  const handleToggleStatus = async (id: string, current: string) => {
     const nextStatus = current === "ACTIVE" ? "SUSPENDED" : "ACTIVE";
-    setStudents((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, status: nextStatus as any } : s))
-    );
-    showAlert(`Student account marked as ${nextStatus}`);
+    try {
+      await fetch("/api/students", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status: nextStatus }),
+      });
+      setStudents((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, status: nextStatus as any } : s))
+      );
+      showAlert(`Student account marked as ${nextStatus}`);
+    } catch (e: any) {
+      showAlert(`Error updating status: ${e.message}`);
+    }
   };
 
   // Approve QR Self Admission (Photo 2 Item 1b)
-  const handleApproveSelfAdmission = (adm: PendingSelfAdmission) => {
-    const seatNum = `S-${String((students.length % 48) + 1).padStart(2, "0")}`;
-    const newStudent: StudentRecord = {
-      id: `stu-${Date.now()}`,
-      studentRegNo: `GS-2026-${String(students.length + 1).padStart(4, "0")}`,
-      fullName: adm.fullName,
-      motherName: adm.motherName,
-      mobile: adm.mobile,
-      gender: adm.gender,
-      coursePreparingFor: adm.course,
-      joinedDate: new Date().toISOString(),
-      status: "ACTIVE",
-      isAadhaarVerified: true,
-      aadhaarLast4: "8821",
-      qrCodeToken: `QR-GS-${Date.now()}`,
-      parentName: `${adm.fullName.split(" ")[1] || "Guardian"} Patil`,
-      parentMobile: adm.parentMobile,
-      seatNumber: seatNum,
-      shiftName: "Morning Shift (06:00 - 14:00)",
-      feePlanName: "Monthly Morning Shift (AC)",
-      feeStatus: "PAID",
-      balanceAmount: 0,
-      monthlyFees: [
-        { month: "Nov 2026", amount: 1800, status: "PAID" },
-        { month: "Dec 2026", amount: 1800, status: "DUE" },
-      ],
-    };
-
-    setStudents([newStudent, ...students]);
-    setPendingSelfAdmissions(pendingSelfAdmissions.filter((p) => p.id !== adm.id));
-    showAlert(`✓ Admission approved for ${adm.fullName}! Desk ${seatNum} allocated and WhatsApp confirmation dispatched.`);
+  const handleApproveSelfAdmission = async (adm: PendingSelfAdmission) => {
+    try {
+      const res = await fetch("/api/admissions/requests", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ requestId: adm.id, action: "ACCEPT" }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showAlert(`✓ ${data.message || `Admission approved for ${adm.fullName}!`}`);
+        await fetchStudents();
+      } else {
+        showAlert(`Error: ${data.error || "Approval failed"}`);
+      }
+    } catch (err: any) {
+      showAlert(`Error: ${err.message}`);
+    }
   };
 
-  const handleRejectSelfAdmission = (id: string) => {
-    setPendingSelfAdmissions(pendingSelfAdmissions.filter((p) => p.id !== id));
-    showAlert("Admission application declined.");
+  const handleRejectSelfAdmission = async (id: string) => {
+    try {
+      const res = await fetch("/api/admissions/requests", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ requestId: id, action: "REJECT" }),
+      });
+      if (res.ok) {
+        showAlert("Admission application declined.");
+        setPendingSelfAdmissions((prev) => prev.filter((p) => p.id !== id));
+      }
+    } catch (err: any) {
+      showAlert(`Error: ${err.message}`);
+    }
   };
 
   // Edit Profile (Photo 2 Item 1c)
@@ -232,12 +199,26 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
     setSelectedStudentForProfile(student);
   };
 
-  const handleSaveProfile = () => {
+  const handleSaveProfile = async () => {
     if (!editFormData) return;
-    setStudents(students.map((s) => (s.id === editFormData.id ? editFormData : s)));
-    setSelectedStudentForProfile(editFormData);
-    setIsEditingProfile(false);
-    showAlert(`✓ Profile successfully updated for ${editFormData.fullName}`);
+    try {
+      const res = await fetch("/api/students", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editFormData),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setStudents(students.map((s) => (s.id === editFormData.id ? editFormData : s)));
+        setSelectedStudentForProfile(editFormData);
+        setIsEditingProfile(false);
+        showAlert(`✓ Profile successfully updated for ${editFormData.fullName}`);
+      } else {
+        showAlert(`Error: ${data.error || "Failed to update profile"}`);
+      }
+    } catch (err: any) {
+      showAlert(`Error: ${err.message}`);
+    }
   };
 
   // WhatsApp Fee Receipt (Photo 2 Item 2)
@@ -323,6 +304,14 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            onClick={() => setShowQrFlyerModal(true)}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 dark:border-indigo-800 dark:bg-indigo-950 px-3.5 py-2 text-xs font-bold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 transition shadow-xs"
+          >
+            <QrCode className="h-4 w-4 text-indigo-600" />
+            <span>Self-Admission QR</span>
+          </button>
+
           {onNavigateToAdmission && (
             <button
               onClick={onNavigateToAdmission}
@@ -934,6 +923,60 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
               }}
               onClose={() => setSelectedStudentForIdCard(null)}
             />
+          </div>
+        </div>
+      )}
+
+      {/* 5. QR Code Self-Admission Flyer Modal (Photo 2 Item 1b) */}
+      {showQrFlyerModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <div className="w-full max-w-sm rounded-3xl bg-white dark:bg-slate-900 p-6 text-center shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <QrCode className="h-5 w-5 text-indigo-600" />
+                <h3 className="font-bold text-sm text-slate-900 dark:text-white">QR Self-Admission Standee</h3>
+              </div>
+              <button onClick={() => setShowQrFlyerModal(false)} className="rounded-full p-1 text-slate-400 hover:text-slate-600">
+                ✕
+              </button>
+            </div>
+
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700/60">
+              <div className="mx-auto flex h-48 w-48 items-center justify-center rounded-2xl bg-white p-3 shadow-md border border-slate-200 dark:border-slate-700">
+                {/* Visual QR Code Display */}
+                <img
+                  src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=http://localhost:3000/admission/self"
+                  alt="Student Self-Admission QR Code"
+                  className="h-full w-full object-contain"
+                />
+              </div>
+              <p className="mt-3 text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                Scan to Register at StudyPlus Abhyasika
+              </p>
+              <p className="text-[10px] text-slate-400 mt-0.5">
+                Students can scan this at the library entrance to submit their admission.
+              </p>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(`${window.location.origin}/admission/self`);
+                  showAlert("✓ Self-admission link copied to clipboard!");
+                }}
+                className="flex-1 rounded-xl border border-slate-200 dark:border-slate-700 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
+              >
+                Copy URL Link
+              </button>
+              <button
+                type="button"
+                onClick={() => window.open("/admission/self", "_blank")}
+                className="flex-1 rounded-xl bg-indigo-600 py-2.5 text-xs font-bold text-white hover:bg-indigo-700 shadow-xs"
+              >
+                Open Form →
+              </button>
+            </div>
           </div>
         </div>
       )}

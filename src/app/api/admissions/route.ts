@@ -96,6 +96,7 @@ export async function GET(request: Request) {
           id: s.id,
           studentRegNo: s.studentRegNo,
           fullName: s.fullName,
+          motherName: s.motherName,
           mobile: s.mobile,
           email: s.email,
           course: s.coursePreparingFor,
@@ -128,6 +129,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const {
       fullName,
+      motherName,
       mobile,
       email,
       gender,
@@ -281,6 +283,7 @@ export async function POST(request: Request) {
           branchId: branch.id,
           studentRegNo,
           fullName: fullName.trim(),
+          motherName: motherName?.trim() || null,
           mobile: cleanStudentMobile,
           isMobileVerified,
           email: email?.trim() || null,

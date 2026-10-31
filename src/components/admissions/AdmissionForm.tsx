@@ -713,11 +713,11 @@ export const AdmissionForm: React.FC = () => {
                   <select
                     value={formData.parentRelation}
                     onChange={(e) => setFormData({ ...formData, parentRelation: e.target.value })}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-800 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-900 focus:border-indigo-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                   >
-                    <option>Father</option>
-                    <option>Mother</option>
-                    <option>Guardian</option>
+                    <option value="Father" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">Father</option>
+                    <option value="Mother" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">Mother</option>
+                    <option value="Guardian" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">Guardian</option>
                   </select>
                 </div>
 
