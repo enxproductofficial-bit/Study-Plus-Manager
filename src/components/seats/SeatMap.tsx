@@ -17,6 +17,7 @@ import {
   Loader2,
   Check
 } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
 interface Shift {
   id: string;
@@ -44,6 +45,7 @@ interface SeatItem {
 }
 
 export const SeatMap: React.FC = () => {
+  const { t } = useTranslation();
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [selectedShiftId, setSelectedShiftId] = useState<string>("");
   const [selectedSection, setSelectedSection] = useState<string>("ALL");
@@ -157,15 +159,15 @@ export const SeatMap: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                Live Seat Matrix (Neon PostgreSQL)
+                {t("nav_seats")}
               </h2>
               <span className="flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                Live Cloud Sync
+                {t("live_sync")}
               </span>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Real-time occupancy across 48 physical desks. Double-booking is strictly prohibited by database constraint.
+              Real-time occupancy across physical study hall desks. Verified live database synchronization.
             </p>
           </div>
 

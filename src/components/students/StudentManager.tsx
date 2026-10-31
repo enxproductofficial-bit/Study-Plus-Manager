@@ -24,6 +24,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { StudentIdCard } from "@/components/admissions/StudentIdCard";
+import { useTranslation } from "@/lib/i18n";
 
 interface StudentRecord {
   id: string;
@@ -70,6 +71,7 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
   onNavigateToAdmission,
   userRole = "OWNER",
 }) => {
+  const { t } = useTranslation();
   const [students, setStudents] = useState<StudentRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -245,7 +247,7 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
                 {pendingSelfAdmissions.length}
               </span>
               <h3 className="font-bold text-sm text-indigo-950 dark:text-indigo-200">
-                Acceptance Queue: Walk-in Student Self-Admissions (via QR Code)
+                {t("admission_requests")}: Walk-in Student Self-Admissions (via QR)
               </h3>
             </div>
             <span className="text-[11px] font-semibold text-indigo-700 dark:text-indigo-300">
@@ -265,9 +267,9 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
                     <span className="text-[10px] text-slate-400">{adm.appliedAt}</span>
                   </div>
                   <div className="mt-1 space-y-0.5 text-xs text-slate-600 dark:text-slate-300">
-                    <p>Mother&apos;s Name: <b>{adm.motherName}</b></p>
-                    <p>Contact: <b>+91 {adm.mobile}</b> • Parent: <b>+91 {adm.parentMobile}</b></p>
-                    <p className="text-indigo-600 dark:text-indigo-400 font-semibold mt-1">Course: {adm.course}</p>
+                    <p>{t("mother_name")}: <b>{adm.motherName}</b></p>
+                    <p>{t("student_contact")}: <b>+91 {adm.mobile}</b> • {t("parent_contact")}: <b>+91 {adm.parentMobile}</b></p>
+                    <p className="text-indigo-600 dark:text-indigo-400 font-semibold mt-1">{t("course")}: {adm.course}</p>
                   </div>
                 </div>
 
@@ -276,13 +278,13 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
                     onClick={() => handleRejectSelfAdmission(adm.id)}
                     className="flex-1 rounded-lg border border-slate-200 py-1.5 text-xs font-bold text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
                   >
-                    Decline
+                    {t("reject")}
                   </button>
                   <button
                     onClick={() => handleApproveSelfAdmission(adm)}
                     className="flex-1 rounded-lg bg-indigo-600 py-1.5 text-xs font-bold text-white hover:bg-indigo-700 shadow-xs"
                   >
-                    Approve & Allot Desk ✓
+                    {t("accept")} & Allot Desk ✓
                   </button>
                 </div>
               </div>
@@ -375,13 +377,13 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
           <table className="w-full text-left text-xs">
             <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400">
               <tr>
-                <th className="py-3.5 px-4 font-semibold">Student ID & Name</th>
-                <th className="py-3.5 px-4 font-semibold">Contact & Parent</th>
-                <th className="py-3.5 px-4 font-semibold">Goal / Course</th>
-                <th className="py-3.5 px-4 font-semibold">Desk & Shift</th>
-                <th className="py-3.5 px-4 font-semibold">Fee Clearance</th>
-                <th className="py-3.5 px-4 font-semibold">KYC & Status</th>
-                <th className="py-3.5 px-4 font-semibold text-right">Actions</th>
+                <th className="py-3.5 px-4 font-semibold">{t("student_name")}</th>
+                <th className="py-3.5 px-4 font-semibold">{t("student_contact")}</th>
+                <th className="py-3.5 px-4 font-semibold">{t("course")}</th>
+                <th className="py-3.5 px-4 font-semibold">{t("seat")}</th>
+                <th className="py-3.5 px-4 font-semibold">{t("fees_collected")}</th>
+                <th className="py-3.5 px-4 font-semibold">{t("status")}</th>
+                <th className="py-3.5 px-4 font-semibold text-right">{t("actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">

@@ -12,6 +12,7 @@ import {
   RotateCcw,
   CheckCircle2,
 } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
 export interface LedgerRow {
   id: string;
@@ -38,6 +39,7 @@ const CATEGORY_OPTIONS = [
 ];
 
 export const LedgerView: React.FC = () => {
+  const { t } = useTranslation();
   // Empty sheet capability (Photo 3 Item V)
   const [rows, setRows] = useState<LedgerRow[]>([
     {
@@ -169,7 +171,7 @@ export const LedgerView: React.FC = () => {
         {/* Total Income */}
         <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Income</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t("total_income")}</span>
             <TrendingUp className="h-4 w-4 text-emerald-500" />
           </div>
           <div className="mt-2 text-2xl font-black text-emerald-600 dark:text-emerald-400">
@@ -181,7 +183,7 @@ export const LedgerView: React.FC = () => {
         {/* Total Expenses */}
         <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Expenses</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t("total_expense")}</span>
             <TrendingDown className="h-4 w-4 text-rose-500" />
           </div>
           <div className="mt-2 text-2xl font-black text-rose-600 dark:text-rose-400">
@@ -193,7 +195,7 @@ export const LedgerView: React.FC = () => {
         {/* Net Profit / Loss */}
         <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Net Operating P&L</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t("net_profit")}</span>
             <IndianRupee className="h-4 w-4 text-indigo-500" />
           </div>
           <div
@@ -215,7 +217,7 @@ export const LedgerView: React.FC = () => {
         <div className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800">
           <div>
             <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white">
-              Income & Expense Editable Sheet
+              {t("pnl_heading")}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400">
               Directly edit cells below. Real-time auto-calculation across rows.
@@ -229,7 +231,7 @@ export const LedgerView: React.FC = () => {
               title="Clear all rows to an empty sheet"
             >
               <RotateCcw className="h-3.5 w-3.5" />
-              <span>Empty Sheet</span>
+              <span>{t("clear_sheet")}</span>
             </button>
 
             <button
@@ -245,7 +247,7 @@ export const LedgerView: React.FC = () => {
               className="flex items-center gap-1.5 rounded-xl bg-indigo-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-indigo-700 transition shadow-xs"
             >
               <Plus className="h-4 w-4" />
-              <span>Add Row</span>
+              <span>{t("add_entry")}</span>
             </button>
           </div>
         </div>

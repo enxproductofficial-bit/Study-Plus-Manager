@@ -19,8 +19,10 @@ import {
   MapPin,
   Lock,
 } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
 export const LibrarySettings: React.FC = () => {
+  const { t } = useTranslation();
   const [activeSection, setActiveSection] = useState<
     "profile" | "shifts" | "plans" | "staff" | "payments" | "notifications" | "appearance"
   >("profile");
@@ -76,7 +78,7 @@ export const LibrarySettings: React.FC = () => {
         {savedSuccess && (
           <div className="flex items-center gap-1.5 rounded-xl bg-emerald-50 border border-emerald-200 px-3 py-1.5 text-xs font-bold text-emerald-700">
             <CheckCircle2 className="h-4 w-4" />
-            Changes saved successfully!
+            {t("saved_successfully")}
           </div>
         )}
       </div>
@@ -401,7 +403,7 @@ export const LibrarySettings: React.FC = () => {
                   }}
                   className="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-xs font-bold text-rose-700 hover:bg-rose-100 transition"
                 >
-                  Sign Out from Account
+                  {t("sign_out")}
                 </button>
               </div>
             </div>

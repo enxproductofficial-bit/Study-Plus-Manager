@@ -19,6 +19,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { StudentIdCard, IdCardData } from "./StudentIdCard";
+import { useTranslation } from "@/lib/i18n";
 
 interface ShiftOption {
   id: string;
@@ -58,7 +59,8 @@ interface RecentStudent {
 }
 
 export const AdmissionForm: React.FC = () => {
-  // Master Data from Neon DB
+  const { t } = useTranslation();
+  // Master Data from Database
   const [shifts, setShifts] = useState<ShiftOption[]>([]);
   const [feePlans, setFeePlans] = useState<FeePlanOption[]>([]);
   const [seats, setSeats] = useState<SeatOption[]>([]);
@@ -532,14 +534,14 @@ export const AdmissionForm: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                Digital Admission & eKYC Verification
+                {t("nav_admission")}
               </h2>
               <span className="rounded-full bg-indigo-50 px-2.5 py-0.5 text-[11px] font-bold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-                Module 07
+                GranthSetu
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              Compliant with Enterprenex CR-01: Dual phone OTP, UIDAI Aadhaar last-4 storage, and instant ID card.
+              Verified student enrollment • Dual mobile verification and instant CR80 student ID card.
             </p>
           </div>
 
@@ -551,12 +553,12 @@ export const AdmissionForm: React.FC = () => {
               className="flex items-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-bold text-indigo-700 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 transition-all shadow-xs"
             >
               <QrCode className="h-4 w-4 text-indigo-600" />
-              <span>QR Self-Admission</span>
+              <span>{t("qr_self_admission")}</span>
             </button>
 
             <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Neon DB Connected</span>
+              <span>{t("live_sync")}</span>
             </div>
           </div>
         </div>
@@ -578,13 +580,13 @@ export const AdmissionForm: React.FC = () => {
             {/* Step 1: Student Information (Photo 2 Item 1a) */}
             <div className="space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                1. Student Information
+                {t("student_information")}
               </h3>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Student Full Name *
+                    {t("full_name")} *
                   </label>
                   <input
                     required
@@ -598,7 +600,7 @@ export const AdmissionForm: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Mother&apos;s Name *
+                    {t("mother_name")} *
                   </label>
                   <input
                     required
@@ -612,7 +614,7 @@ export const AdmissionForm: React.FC = () => {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Student Mobile (10-Digit OTP) *
+                    {t("student_contact")} *
                   </label>
                   <div className="flex gap-2">
                     <input
@@ -641,7 +643,7 @@ export const AdmissionForm: React.FC = () => {
                 {/* Course Dropdown (Photo 2 Item 1a: UPSC/MPSC, SSC/Banking, NEET/JEE/CET, Others) */}
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Target Exam / Course *
+                    {t("target_course")} *
                   </label>
                   <select
                     value={formData.course}
@@ -649,32 +651,32 @@ export const AdmissionForm: React.FC = () => {
                     className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-900 focus:border-indigo-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                   >
                     <option value="Competitive exam (UPSC / MPSC)" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">
-                      1. Competitive exam (UPSC / MPSC)
+                      1. {t("competitive_exam")}
                     </option>
                     <option value="SSC / Banking" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">
-                      2. SSC / Banking
+                      2. {t("ssc_banking")}
                     </option>
                     <option value="NEET / JEE / CET" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">
-                      3. NEET / JEE / CET
+                      3. {t("neet_jee_cet")}
                     </option>
                     <option value="Others" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">
-                      4. Others
+                      4. {t("others")}
                     </option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Gender
+                    {t("gender")}
                   </label>
                   <select
                     value={formData.gender}
                     onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                     className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-900 focus:border-indigo-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                   >
-                    <option value="Male" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">Male</option>
-                    <option value="Female" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">Female</option>
-                    <option value="Other" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">Other</option>
+                    <option value="Male" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">{t("male")}</option>
+                    <option value="Female" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">{t("female")}</option>
+                    <option value="Other" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-slate-100">{t("other")}</option>
                   </select>
                 </div>
               </div>
@@ -751,13 +753,13 @@ export const AdmissionForm: React.FC = () => {
               </div>
             </div>
 
-            {/* Step 3: UIDAI-Compliant Aadhaar eKYC (Strictly Last 4 Digits) */}
+            {/* Step 3: Verified Identity Verification */}
             <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  3. Aadhaar eKYC Verification (Digio / UIDAI Safe)
+                  3. Student Identity Verification (Government ID / Aadhaar)
                 </h3>
-                <span className="text-[11px] text-slate-400">UIDAI Safe: Only last 4 digits saved</span>
+                <span className="text-[11px] text-slate-400">Secure: Only last 4 digits stored</span>
               </div>
 
               <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-800/40 space-y-3">

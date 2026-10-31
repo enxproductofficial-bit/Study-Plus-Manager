@@ -16,8 +16,10 @@ import { EnquiryCrm } from "@/components/admissions/EnquiryCrm";
 import { LibrarySettings } from "@/components/settings/LibrarySettings";
 import { KycDocumentManager } from "@/components/admissions/KycDocumentManager";
 import { ArrowLeft, Sparkles, Building2, ExternalLink, ShieldCheck } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
 export default function OwnerPortalPage() {
+  const { t } = useTranslation();
   const [currentTab, setCurrentTab] = useState<NavTab>("dashboard");
   const [currentBranch, setCurrentBranch] = useState("Main Branch - Shivaji Nagar");
 
@@ -50,16 +52,16 @@ export default function OwnerPortalPage() {
             <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-indigo-100 bg-white dark:bg-slate-900 dark:border-slate-800 p-3.5 text-xs text-slate-700 dark:text-slate-300 shadow-xs">
               <div className="flex items-center gap-2">
                 <span className="rounded-full bg-indigo-600 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-xs">
-                  OWNER PORTAL
+                  {t("owner_portal")}
                 </span>
                 <span>
-                  Administrative & Financial Overview for <strong>{currentBranch}</strong>
+                  {t("admin_overview")} • <strong>{currentBranch}</strong>
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Live Sync Active
+                  {t("live_sync")}
                 </span>
               </div>
             </div>

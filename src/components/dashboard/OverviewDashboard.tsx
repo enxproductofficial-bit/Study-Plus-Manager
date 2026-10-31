@@ -23,6 +23,7 @@ import {
   Share2,
 } from "lucide-react";
 import { NavTab } from "../layout/Sidebar";
+import { useTranslation } from "@/lib/i18n";
 
 interface OverviewProps {
   onNavigate: (tab: NavTab) => void;
@@ -33,6 +34,7 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
   onNavigate,
   userRole,
 }) => {
+  const { t } = useTranslation();
   const [reminderToast, setReminderToast] = useState<string | null>(null);
   const [statsData, setStatsData] = useState<any>(null);
   const [isNoticeModalOpen, setIsNoticeModalOpen] = useState(false);
@@ -123,7 +125,7 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
         <div>
           <div className="flex items-center gap-3">
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-              Welcome Back, {userRole === "OWNER" ? "Owner" : "Admin"}!
+              {t("welcome_back")}
             </h1>
             {/* Dynamic Real Date (Photo 1 Requirement 6) */}
             <div className="hidden sm:inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
@@ -132,7 +134,7 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
             </div>
           </div>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Real-time operations, admissions, and financial overview for GranthSetu.
+            {t("dashboard_subtitle")}
           </p>
         </div>
 
@@ -144,7 +146,7 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
             className="inline-flex items-center gap-1.5 rounded-xl bg-blue-700 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-blue-800 transition-all active:scale-95"
           >
             <UserPlus className="h-4 w-4" />
-            <span>Add Student</span>
+            <span>{t("add_student")}</span>
           </button>
 
           {/* Button 2: Collect Fees */}
@@ -153,7 +155,7 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
             className="inline-flex items-center gap-1.5 rounded-xl bg-teal-600 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-teal-700 transition-all active:scale-95"
           >
             <IndianRupee className="h-4 w-4" />
-            <span>Collect Fees</span>
+            <span>{t("collect_fees")}</span>
           </button>
 
           {/* Button 3: Send Notice */}
@@ -162,7 +164,7 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
             className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-indigo-700 transition-all active:scale-95"
           >
             <Megaphone className="h-4 w-4" />
-            <span>Send Notice</span>
+            <span>{t("send_notice")}</span>
           </button>
 
           {/* Button 4: Generate Report */}
@@ -171,7 +173,7 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
             className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 shadow-xs hover:bg-slate-50 dark:hover:bg-slate-700 transition-all active:scale-95"
           >
             <FileText className="h-4 w-4 text-slate-500 dark:text-slate-400" />
-            <span>Generate Report</span>
+            <span>{t("generate_report")}</span>
           </button>
         </div>
       </div>
@@ -195,11 +197,11 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
             </div>
           </div>
           <div className="mt-4">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Total Students</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{t("total_students")}</span>
             <div className="text-2xl font-black text-slate-900 dark:text-white mt-0.5">
               {stats.totalStudents}
             </div>
-            <span className="text-[11px] text-slate-400">vs last month</span>
+            <span className="text-[11px] text-slate-400">{t("vs_last_month")}</span>
           </div>
         </div>
 
@@ -213,11 +215,11 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
               <Armchair className="h-6 w-6" />
             </div>
             <span className="text-[11px] font-bold text-emerald-600">
-              {stats.occupancyRate}% Occupancy
+              {stats.occupancyRate}%
             </span>
           </div>
           <div className="mt-4">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Occupied Seats</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{t("occupied_seats")}</span>
             <div className="text-2xl font-black text-slate-900 dark:text-white mt-0.5">
               {stats.occupiedSeats} <span className="text-sm font-normal text-slate-400">/ {stats.totalSeats}</span>
             </div>
@@ -247,11 +249,11 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
               </div>
             </div>
             <div className="mt-4">
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Fees Collected</span>
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{t("fees_collected")}</span>
               <div className="text-2xl font-black text-slate-900 dark:text-white mt-0.5">
                 ₹{Number(stats.feesCollected).toLocaleString("en-IN")}
               </div>
-              <span className="text-[11px] text-slate-400">This Month</span>
+              <span className="text-[11px] text-slate-400">{t("this_month")}</span>
             </div>
           </div>
         ) : (
@@ -280,11 +282,11 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
             </span>
           </div>
           <div className="mt-4">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Pending Fees</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{t("pending_fees")}</span>
             <div className="text-2xl font-black text-slate-900 dark:text-white mt-0.5">
               ₹{Number(stats.pendingFees).toLocaleString("en-IN")}
             </div>
-            <span className="text-[11px] text-slate-400">{stats.pendingStudentsCount} Students</span>
+            <span className="text-[11px] text-slate-400">{stats.pendingStudentsCount} {t("students_count")}</span>
           </div>
         </div>
       </div>
@@ -556,15 +558,15 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
           <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
             <div>
               <h3 className="font-bold text-sm text-slate-900 dark:text-white">
-                Recent Admissions
+                {t("recent_admissions")}
               </h3>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">Latest enrolled students across study halls</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">{t("recent_admissions_sub")}</p>
             </div>
             <button
               onClick={() => onNavigate("students")}
               className="text-xs font-semibold text-blue-700 hover:text-blue-800 dark:text-blue-400 flex items-center gap-0.5"
             >
-              View All Students →
+              {t("view_all")}
             </button>
           </div>
 
@@ -573,11 +575,11 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
               <thead className="text-[11px] font-semibold text-slate-400 border-b border-slate-100 dark:border-slate-800">
                 <tr>
                   <th className="py-2.5 px-2">#</th>
-                  <th className="py-2.5 px-2">Student Name</th>
-                  <th className="py-2.5 px-2">Course</th>
-                  <th className="py-2.5 px-2">Seat</th>
-                  <th className="py-2.5 px-2">Date</th>
-                  <th className="py-2.5 px-2 text-right">Status</th>
+                  <th className="py-2.5 px-2">{t("student_name")}</th>
+                  <th className="py-2.5 px-2">{t("course")}</th>
+                  <th className="py-2.5 px-2">{t("seat")}</th>
+                  <th className="py-2.5 px-2">{t("date")}</th>
+                  <th className="py-2.5 px-2 text-right">{t("status")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -614,7 +616,7 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
                       </td>
                       <td className="py-2.5 px-2 text-right">
                         <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                          {adm.status || "ACTIVE"}
+                          {adm.status || t("active")}
                         </span>
                       </td>
                     </tr>
@@ -630,15 +632,15 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
           <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
             <div>
               <h3 className="font-bold text-sm text-slate-900 dark:text-white">
-                Pending Fees
+                {t("pending_fees_table")}
               </h3>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">Students with outstanding fee balances</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">{t("pending_fees_sub")}</p>
             </div>
             <button
               onClick={() => onNavigate("fees")}
               className="text-xs font-semibold text-blue-700 hover:text-blue-800 dark:text-blue-400 flex items-center gap-0.5"
             >
-              Fee Manager →
+              {t("view_all")}
             </button>
           </div>
 
@@ -647,11 +649,11 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
               <thead className="text-[11px] font-semibold text-slate-400 border-b border-slate-100 dark:border-slate-800">
                 <tr>
                   <th className="py-2.5 px-2">#</th>
-                  <th className="py-2.5 px-2">Student Name</th>
-                  <th className="py-2.5 px-2">Amount</th>
-                  <th className="py-2.5 px-2">Due Date</th>
-                  <th className="py-2.5 px-2 text-center">Days Remaining</th>
-                  <th className="py-2.5 px-2 text-right">Action</th>
+                  <th className="py-2.5 px-2">{t("student_name")}</th>
+                  <th className="py-2.5 px-2">{t("amount")}</th>
+                  <th className="py-2.5 px-2">{t("due_date")}</th>
+                  <th className="py-2.5 px-2 text-center">{t("days_remaining")}</th>
+                  <th className="py-2.5 px-2 text-right">{t("actions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -684,7 +686,7 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
                                 : "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-900"
                             }`}
                           >
-                            {fee.statusText || (isOverdue ? `${Math.abs(fee.daysRemaining)}d Overdue` : `${fee.daysRemaining}d Left`)}
+                            {fee.statusText || (isOverdue ? `${Math.abs(fee.daysRemaining)}d ${t("overdue")}` : `${fee.daysRemaining}d ${t("left")}`)}
                           </span>
                         </td>
                         <td className="py-2.5 px-2 text-right">
@@ -695,7 +697,7 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
                               className="inline-flex items-center gap-1 rounded-lg bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 px-2 py-1 text-[11px] font-bold text-teal-800 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-900 transition-all active:scale-95"
                             >
                               <Send className="h-3 w-3 text-teal-600 dark:text-teal-400" />
-                              <span>Remind</span>
+                              <span>{t("remind")}</span>
                             </button>
                             <button
                               onClick={() => onNavigate("fees")}
@@ -703,7 +705,7 @@ export const OverviewDashboard: React.FC<OverviewProps> = ({
                               className="inline-flex items-center gap-1 rounded-lg bg-blue-700 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-blue-800 transition-all shadow-2xs active:scale-95"
                             >
                               <IndianRupee className="h-3 w-3" />
-                              <span>Pay Fees</span>
+                              <span>{t("pay_fees")}</span>
                             </button>
                           </div>
                         </td>

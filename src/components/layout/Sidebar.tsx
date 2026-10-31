@@ -24,6 +24,7 @@ import {
   Receipt,
   User,
 } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
 export type NavTab =
   | "dashboard"
@@ -57,6 +58,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onTabChange,
   userRole,
 }) => {
+  const { t } = useTranslation();
+
   // Navigation item configurations per Section 12 of the SRS & prompt
   const getNavItems = () => {
     switch (userRole) {
@@ -75,17 +78,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       case "OWNER":
         return [
-          { id: "dashboard" as NavTab, label: "Dashboard", icon: LayoutDashboard },
-          { id: "students" as NavTab, label: "Student Management", icon: Users },
-          { id: "admission" as NavTab, label: "Digital Admissions", icon: UserPlus },
-          { id: "seats" as NavTab, label: "Live Seat Matrix", icon: Armchair },
-          { id: "fees" as NavTab, label: "Fees & Accounts", icon: IndianRupee },
-          { id: "enquiries" as NavTab, label: "Sales & Enquiries", icon: Users2 },
-          { id: "expenses" as NavTab, label: "Income & Expenses (P&L)", icon: FileSpreadsheet },
-          { id: "staff" as NavTab, label: "Staff Management", icon: UserCheck },
-          { id: "reports" as NavTab, label: "Analytics & Reports", icon: FileText },
-          { id: "notices" as NavTab, label: "Dual WhatsApp Alerts", icon: Bell },
-          { id: "settings" as NavTab, label: "Library Settings", icon: Settings },
+          { id: "dashboard" as NavTab, label: t("nav_dashboard"), icon: LayoutDashboard },
+          { id: "students" as NavTab, label: t("nav_students"), icon: Users },
+          { id: "admission" as NavTab, label: t("nav_admission"), icon: UserPlus },
+          { id: "seats" as NavTab, label: t("nav_seats"), icon: Armchair },
+          { id: "fees" as NavTab, label: t("nav_fees"), icon: IndianRupee },
+          { id: "enquiries" as NavTab, label: t("nav_enquiries"), icon: Users2 }, // Photo 3 Item IV: Renamed to Enquiries!
+          { id: "expenses" as NavTab, label: t("nav_expenses"), icon: FileSpreadsheet },
+          { id: "staff" as NavTab, label: t("nav_staff"), icon: UserCheck },
+          { id: "reports" as NavTab, label: t("nav_reports"), icon: FileText },
+          { id: "notices" as NavTab, label: t("nav_notices"), icon: Bell },
+          { id: "settings" as NavTab, label: t("nav_settings"), icon: Settings },
         ];
 
       case "STAFF":
@@ -121,18 +124,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Top Header / Brand Logo */}
       <div>
         <div className="flex items-center gap-3 px-6 py-5 border-b border-slate-800/80">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-blue-600 text-white shadow-md shadow-indigo-500/25">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-700 to-teal-500 text-white shadow-md shadow-teal-500/20">
             <BookOpen className="h-5 w-5 stroke-[2.2]" />
           </div>
           <div className="flex flex-col">
             <span className="text-base font-black tracking-tight text-white leading-tight">
-              GranthSetu
+              {t("brand_name")}
             </span>
-            <span className="text-[10px] font-bold text-indigo-400 tracking-wider uppercase">
+            <span className="text-[10px] font-bold text-teal-400 tracking-wider uppercase">
               {userRole === "SUPER_ADMIN"
                 ? "Platform Admin"
                 : userRole === "OWNER"
-                ? "Owner Portal"
+                ? t("owner_portal")
                 : userRole === "STAFF"
                 ? "Staff Counter"
                 : "Student Self-Service"}

@@ -22,6 +22,7 @@ import {
   ChevronRight,
   BookOpen,
 } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
 interface MonthlyRecord {
   id: string;
@@ -55,6 +56,7 @@ interface StudentFeeRecord {
 }
 
 export const FeeManager: React.FC = () => {
+  const { t } = useTranslation();
   const [records, setRecords] = useState<StudentFeeRecord[]>([]);
   const [stats, setStats] = useState({
     totalDueBalance: 0,
@@ -350,13 +352,13 @@ export const FeeManager: React.FC = () => {
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-50 text-slate-500 dark:bg-slate-800/60 dark:text-slate-400 uppercase tracking-wider font-semibold">
               <tr>
-                <th className="px-5 py-3">Student & Seat</th>
-                <th className="px-5 py-3">Plan / Shift</th>
-                <th className="px-5 py-3">Total / Paid</th>
-                <th className="px-5 py-3">Balance</th>
-                <th className="px-5 py-3">Due Date</th>
-                <th className="px-5 py-3">Status</th>
-                <th className="px-5 py-3 text-right">Actions</th>
+                <th className="px-5 py-3">{t("student_name")} & {t("seat")}</th>
+                <th className="px-5 py-3">{t("course")}</th>
+                <th className="px-5 py-3">{t("amount")}</th>
+                <th className="px-5 py-3">{t("pending_fees")}</th>
+                <th className="px-5 py-3">{t("due_date")}</th>
+                <th className="px-5 py-3">{t("status")}</th>
+                <th className="px-5 py-3 text-right">{t("actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
