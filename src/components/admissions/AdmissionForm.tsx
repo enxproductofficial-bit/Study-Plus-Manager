@@ -490,38 +490,43 @@ export const AdmissionForm: React.FC = () => {
             </p>
 
             {/* QR Code Container */}
-            <div className="mx-auto flex h-52 w-52 items-center justify-center rounded-2xl bg-slate-50 p-4 border-2 border-dashed border-indigo-200 dark:bg-slate-800 dark:border-slate-700">
-              <div className="flex flex-col items-center justify-center text-center">
-                <QrCode className="h-36 w-36 text-indigo-600 dark:text-indigo-400" />
-                <span className="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-300 mt-1">
-                  scan.granthsetu.in/adm
-                </span>
-              </div>
+            <div className="mx-auto flex h-52 w-52 items-center justify-center rounded-2xl bg-white p-3 border-2 border-indigo-200 dark:border-indigo-800 shadow-md">
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
+                  typeof window !== "undefined" ? `${window.location.origin}/admission/self` : "http://localhost:3000/admission/self"
+                )}`}
+                alt="Student Self-Admission QR Code"
+                className="h-full w-full object-contain"
+              />
             </div>
 
             <div className="rounded-xl bg-indigo-50 dark:bg-indigo-950/50 p-3 text-left border border-indigo-100 dark:border-indigo-900 text-xs text-indigo-900 dark:text-indigo-200">
-              <span className="font-bold block mb-1">✓ Instant Walk-in Process:</span>
+              <span className="font-bold block mb-1">✓ In-Software Self-Admission Flow:</span>
               <ul className="space-y-1 list-disc list-inside text-[11px] text-slate-600 dark:text-slate-300">
-                <li>Student fills full name, mother&apos;s name, mobile & course.</li>
-                <li>Submission lands in your <strong>Acceptance Queue</strong>.</li>
-                <li>You review and approve with 1-click to allot a desk.</li>
+                <li>Student scans QR &rarr; redirects to <strong>/admission/self</strong> in software.</li>
+                <li>Fills Full Name, Mother&apos;s Name, Mobile & Course.</li>
+                <li>Submission lands in your <strong>Acceptance Queue</strong> in real-time.</li>
+                <li>Approve & Allot Desk with 1 click.</li>
               </ul>
             </div>
 
             <div className="flex gap-2">
               <button
                 type="button"
-                onClick={() => window.print()}
+                onClick={() => {
+                  navigator.clipboard.writeText(`${window.location.origin}/admission/self`);
+                  alert("Self-admission link copied to clipboard!");
+                }}
                 className="flex-1 rounded-xl border border-slate-200 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200"
               >
-                Print Standee / Poster
+                Copy URL Link
               </button>
               <button
                 type="button"
-                onClick={() => setShowSelfQrModal(false)}
+                onClick={() => window.open("/admission/self", "_blank")}
                 className="flex-1 rounded-xl bg-indigo-600 py-2.5 text-xs font-bold text-white hover:bg-indigo-700 shadow-xs"
               >
-                Done
+                Open Form &rarr;
               </button>
             </div>
           </div>

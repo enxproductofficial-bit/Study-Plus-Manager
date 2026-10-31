@@ -947,7 +947,9 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
               <div className="mx-auto flex h-48 w-48 items-center justify-center rounded-2xl bg-white p-3 shadow-md border border-slate-200 dark:border-slate-700">
                 {/* Visual QR Code Display */}
                 <img
-                  src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=http://localhost:3000/admission/self"
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
+                    typeof window !== "undefined" ? `${window.location.origin}/admission/self` : "http://localhost:3000/admission/self"
+                  )}`}
                   alt="Student Self-Admission QR Code"
                   className="h-full w-full object-contain"
                 />
