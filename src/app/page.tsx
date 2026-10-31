@@ -10,6 +10,10 @@ import { FeeManager } from "@/components/fees/FeeManager";
 import { AttendanceScanner } from "@/components/attendance/AttendanceScanner";
 import { DualMessageHub } from "@/components/messaging/DualMessageHub";
 import { LedgerView } from "@/components/ledger/LedgerView";
+import { StudentManager } from "@/components/students/StudentManager";
+import { EnquiryCrm } from "@/components/admissions/EnquiryCrm";
+import { LibrarySettings } from "@/components/settings/LibrarySettings";
+import { KycDocumentManager } from "@/components/admissions/KycDocumentManager";
 import { AuthPage, AuthUser } from "@/components/auth/AuthPage";
 import { LandingPage } from "@/components/landing/LandingPage";
 
@@ -93,7 +97,13 @@ export default function Home() {
           if (user.branchName) {
             setCurrentBranch(user.branchName);
           }
-          setViewMode("app");
+          if (user.role === "SUPER_ADMIN") {
+            window.location.href = "/super-admin";
+          } else if (user.role === "STUDENT") {
+            window.location.href = "/student";
+          } else {
+            setViewMode("app");
+          }
         }}
       />
     );
@@ -130,38 +140,50 @@ export default function Home() {
             {currentTab === "dashboard" && (
               <OverviewDashboard onNavigate={setCurrentTab} userRole={userRole} />
             )}
-            {(currentTab === "seats" || currentTab === "students") && <SeatMap />}
+            {currentTab === "students" && (
+              <StudentManager
+                userRole={userRole}
+                onNavigateToAdmission={() => setCurrentTab("admission")}
+              />
+            )}
+            {currentTab === "seats" && <SeatMap />}
             {currentTab === "admission" && <AdmissionForm />}
             {currentTab === "fees" && <FeeManager />}
             {currentTab === "attendance" && <AttendanceScanner />}
             {currentTab === "notices" && <DualMessageHub />}
             {(currentTab === "expenses" || currentTab === "reports") && userRole === "OWNER" && <LedgerView />}
             {currentTab === "enquiries" && (
-              <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center dark:border-slate-800 dark:bg-slate-900">
-                <h3 className="font-bold text-slate-800 dark:text-slate-200">
-                  Sales & Enquiries Pipeline (Module 01)
-                </h3>
-                <p className="mt-1 text-xs text-slate-400">
-                  Track student enquiries, shift preferences, follow-up callbacks, and conversion rates.
-                </p>
-                <div className="mt-6 inline-flex rounded-lg bg-emerald-50 p-3 text-xs text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 font-semibold">
-                  Connected with Branch: {currentBranch}
+              <EnquiryCrm
+                onConvertToAdmission={(enq) => {
+                  setCurrentTab("admission");
+                }}
+              />
+            )}
+            {currentTab === "staff" && userRole === "OWNER" && (
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900 space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                  <h3 className="font-bold text-base text-slate-900 dark:text-slate-100">
+                    Staff Accounts & Role-Based Access Control
+                  </h3>
+                  <span className="text-xs text-indigo-600 font-semibold">1 Active Staff Member</span>
+                </div>
+                <div className="rounded-xl bg-slate-50 dark:bg-slate-800 p-4 border border-slate-200/80 dark:border-slate-700 flex items-center justify-between text-xs">
+                  <div>
+                    <div className="font-bold text-slate-900 dark:text-white">Desk Officer (Staff)</div>
+                    <div className="text-slate-500 dark:text-slate-400">Mobile: 9876543211 • Branch: {currentBranch}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-full bg-blue-50 border border-blue-200 px-2 py-0.5 text-[10px] font-bold text-blue-700">
+                      Front Desk
+                    </span>
+                    <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                      Active
+                    </span>
+                  </div>
                 </div>
               </div>
             )}
-            {currentTab === "settings" && (
-              <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center dark:border-slate-800 dark:bg-slate-900">
-                <h3 className="font-bold text-slate-800 dark:text-slate-200">
-                  GranthSetu System Settings
-                </h3>
-                <p className="mt-1 text-xs text-slate-400">
-                  Manage branches, shift timings, fee tariff plans, and Razorpay webhook configurations.
-                </p>
-                <div className="mt-4 text-xs font-semibold text-slate-500">
-                  Logged in as: <span className="text-emerald-600 font-bold">{userName}</span> ({userRole}) | Branch Code: <span className="font-mono">{currentUser?.branchCode || "BR-01"}</span>
-                </div>
-              </div>
-            )}
+            {currentTab === "settings" && <LibrarySettings />}
 
             {/* Platform Attribution */}
             <div className="mt-10 border-t border-slate-200/80 pt-5 pb-3 text-center dark:border-slate-800">

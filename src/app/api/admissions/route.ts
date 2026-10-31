@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import crypto from "crypto";
 
+export const dynamic = "force-dynamic";
+
 // GET: Fetch master data needed for admission form & recent admissions
 export async function GET(request: Request) {
   try {

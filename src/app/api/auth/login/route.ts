@@ -32,6 +32,20 @@ export async function POST(request: Request) {
       },
     });
 
+    // Fallback: Super Admin demo account (Enterprenex Solution Pvt. Ltd.)
+    if (!user && (cleanIdentifier === "9226860060" || cleanIdentifier.toLowerCase() === "admin@enterprenex.solutions" || cleanIdentifier.toLowerCase() === "superadmin")) {
+      user = await prisma.user.create({
+        data: {
+          role: "SUPER_ADMIN",
+          name: "Enterprenex Super Admin",
+          mobile: "9226860060",
+          email: "admin@enterprenex.solutions",
+          passwordHash: hashPassword(password),
+        },
+        include: { branch: true },
+      });
+    }
+
     // Fallback: If database was not seeded with standard mobile, auto-seed default owner
     if (!user && (cleanIdentifier === "9876543210" || cleanIdentifier.toLowerCase() === "owner@granthsetu.in" || cleanIdentifier.toLowerCase() === "admin")) {
       let branch = await prisma.branch.findFirst();

@@ -6,7 +6,7 @@ import { Search, Bell, Building2, ChevronDown, ShieldCheck, LogOut, Globe } from
 interface HeaderProps {
   currentBranch: string;
   onBranchChange: (branch: string) => void;
-  userRole: "OWNER" | "STAFF" | "STUDENT";
+  userRole: "SUPER_ADMIN" | "OWNER" | "STAFF" | "STUDENT";
   userName: string;
   onToggleRole?: () => void;
   onLogout?: () => void;

@@ -22,7 +22,7 @@ import { NavTab } from "../layout/Sidebar";
 
 interface OverviewProps {
   onNavigate: (tab: NavTab) => void;
-  userRole: "OWNER" | "STAFF" | "STUDENT";
+  userRole: "SUPER_ADMIN" | "OWNER" | "STAFF" | "STUDENT";
 }
 
 export const OverviewDashboard: React.FC<OverviewProps> = ({
