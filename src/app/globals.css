@@ -34,3 +34,19 @@ body {
     text-wrap: balance;
   }
 }
+
+@media print {
+  /* Hide all dashboard chrome: header, nav, sidebar, buttons */
+  header,
+  aside,
+  nav,
+  button,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+}

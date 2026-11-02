@@ -138,33 +138,87 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
       : "XXX"
     : "XXX";
 
-  // Handle Print Action
-  const handlePrint = () => {
-    window.print();
-  };
+  // Handle Download PDF Action (Isolates ONLY the receipt, removing all remaining page details)
+  const handleDownloadPdf = () => {
+    const receiptEl = document.getElementById("chanakya-official-receipt");
+    if (!receiptEl) return;
 
-  // Handle WhatsApp Dispatch
-  const handleWhatsApp = () => {
-    const cleanMobile = receipt.studentContact.replace(/\D/g, "").slice(-10);
-    const text =
-      `*CHANAKYA ABHYASIKA - FEES RECEIPT*\n` +
-      `------------------------------------------\n` +
-      `Receipt No: ${receiptNumber}\n` +
-      `Issue Date: ${issueDate}\n` +
-      `Student Name: ${receipt.studentName}\n` +
-      `Student Contact: ${receipt.studentContact}\n` +
-      `Parent Contact: ${parentContactDisplay}\n` +
-      `Address: ${studentAddress}\n` +
-      `Fees Paid: Rs. ${receipt.feesPaid}/- ${formattedAmountWords}\n` +
-      `Payment Mode: ${receipt.paymentMode}\n` +
-      `Next Due Date: ${nextDueDate}\n` +
-      `------------------------------------------\n` +
-      `Plot No. 148, Ground Basement, Shrinanda Plaza, Cidco Waluj Mahanagar - 1, Chh. Sambhajinagar, MH 431136\n` +
-      `Authorized Signature: Chanakya Abhyasika\n` +
-      `_This is a computer-generated receipt. Payment implies acceptance of terms and conditions._`;
+    // Create an isolated hidden iframe so ONLY the receipt is printed to PDF
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
+    document.body.appendChild(iframe);
 
-    const encoded = encodeURIComponent(text);
-    window.open(`https://wa.me/91${cleanMobile}?text=${encoded}`, "_blank");
+    const doc = iframe.contentWindow?.document;
+    if (!doc) {
+      window.print();
+      return;
+    }
+
+    // Collect all loaded stylesheets and style tags
+    const styles = Array.from(
+      document.querySelectorAll("style, link[rel='stylesheet']")
+    )
+      .map((el) => el.outerHTML)
+      .join("\n");
+
+    doc.open();
+    doc.write(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="utf-8" />
+        <title>Receipt_${receipt.studentName.replace(/\\s+/g, "_")}</title>
+        ${styles}
+        <style>
+          @page {
+            size: A5 portrait;
+            margin: 6mm;
+          }
+          * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          body {
+            margin: 0;
+            padding: 0;
+            background: #ffffff !important;
+            color: #0f172a !important;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          }
+          .isolated-receipt-container {
+            width: 100%;
+            max-width: 620px;
+            margin: 0 auto;
+            background: #ffffff !important;
+            padding: 8px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="isolated-receipt-container">
+          ${receiptEl.innerHTML}
+        </div>
+      </body>
+      </html>
+    `);
+    doc.close();
+
+    // Allow 400ms for browser to render styles before opening print/save-to-PDF dialog
+    setTimeout(() => {
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+      setTimeout(() => {
+        if (document.body.contains(iframe)) {
+          document.body.removeChild(iframe);
+        }
+      }, 2000);
+    }, 400);
   };
 
   return (
@@ -398,42 +452,26 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
           </div>
         </div>
 
-        {/* Modal Bottom Action Bar (Hidden in Print) */}
-        <div className="border-t border-slate-200 bg-slate-50 px-5 py-3.5 flex flex-wrap items-center justify-between gap-2.5 print:hidden">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handlePrint}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-blue-700 transition active:scale-98"
-            >
-              <Printer className="h-3.5 w-3.5" />
-              <span>Print Receipt</span>
-            </button>
+        {/* Modal Bottom Action Bar (Only Download PDF & Close) */}
+        <div className="border-t border-slate-200 bg-slate-50 px-5 py-3.5 flex items-center justify-between gap-3 print:hidden">
+          <p className="text-xs text-slate-500 font-medium hidden sm:block">
+            Official A5 Computer-Generated Fee Receipt
+          </p>
 
+          <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
             <button
               type="button"
-              onClick={handlePrint}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100 transition active:scale-98"
+              onClick={handleDownloadPdf}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-2.5 text-xs font-bold text-white shadow-sm transition active:scale-98"
             >
-              <Download className="h-3.5 w-3.5 text-blue-600" />
+              <Download className="h-4 w-4" />
               <span>Download PDF</span>
-            </button>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleWhatsApp}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 transition active:scale-98"
-            >
-              <Share2 className="h-3.5 w-3.5" />
-              <span>Send on WhatsApp</span>
             </button>
 
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition"
+              className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition"
             >
               Close
             </button>
@@ -444,3 +482,4 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
     </div>
   );
 };
+
