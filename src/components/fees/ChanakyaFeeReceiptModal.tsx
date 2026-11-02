@@ -177,7 +177,7 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
         <style>
           @page {
             size: A4 portrait;
-            margin: 10mm 12mm;
+            margin: 12mm 15mm;
           }
           * {
             box-sizing: border-box;
@@ -187,16 +187,21 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
           html, body {
             margin: 0;
             padding: 0;
+            height: 100%;
             background: #ffffff !important;
             color: #0f172a !important;
             font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
           }
           .isolated-receipt-container {
             width: 100%;
-            max-width: 650px;
+            max-width: 780px;
+            min-height: 85vh;
             margin: 0 auto;
             background: #ffffff !important;
-            padding: 10px;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             page-break-inside: avoid;
             break-inside: avoid;
           }
@@ -225,7 +230,7 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto print:p-0 print:bg-white print:static">
-      <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden my-6 print:m-0 print:border-none print:shadow-none print:max-w-none">
+      <div className="w-full max-w-3xl rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden my-6 print:m-0 print:border-none print:shadow-none print:max-w-none">
         
         {/* Modal Top Control Bar (Hidden in Print) */}
         <div className="flex items-center justify-between border-b border-slate-200 bg-slate-900 px-5 py-3 text-white print:hidden">
@@ -246,168 +251,174 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
         </div>
 
         {/* ========================================================================= */}
-        {/* EXACT RECEIPT DOCUMENT CONTAINER (As per uploaded PDF)                     */}
+        {/* EXACT RECEIPT DOCUMENT CONTAINER (Scaled to fill ~80-85% of Single Page)   */}
         {/* ========================================================================= */}
         <div
           ref={receiptRef}
           id="chanakya-official-receipt"
-          className="bg-white p-5 sm:p-6 font-sans text-slate-900 leading-normal select-text max-w-[650px] mx-auto"
+          className="bg-white p-7 sm:p-9 font-sans text-slate-900 leading-normal select-text max-w-[760px] mx-auto min-h-[780px] flex flex-col justify-between"
         >
-          {/* 1. Header: Address + Solid Blue Line (Logo removed as requested; reserved for future upload) */}
-          <div className="text-center mb-2">
-            <p className="text-[11px] sm:text-[11.5px] text-slate-800 font-medium tracking-normal leading-relaxed">
-              Plot No. 148, Ground Basement, Shrinanda Plaza, Cidco Waluj Mahanagar - 1, Chh. Sambhajinagar, MH 431136
-            </p>
-            <div className="border-b-[2.5px] border-[#1e3a8a] mt-2 mb-2 w-full" />
-          </div>
-
-          {/* 2. Receipt Title */}
-          <div className="text-center my-2">
-            <h2 className="text-base sm:text-[17px] font-black text-[#1e3a8a] tracking-wider uppercase inline-block pb-0.5">
-              FEES RECEIPT
-            </h2>
-          </div>
-
-          {/* 3. Receipt No & Issue Date Bar */}
-          <div className="flex items-center justify-between text-xs sm:text-[12.5px] font-bold text-slate-900 mb-1.5 px-0.5">
-            <div>
-              <span>Receipt No.: </span>
-              <span className="font-mono">{receiptNumber}</span>
+          {/* Top Section: Address, Title, Numbers & Data Table */}
+          <div>
+            {/* 1. Header: Address + Solid Blue Line (Logo removed as requested; reserved for future upload) */}
+            <div className="text-center mb-2.5">
+              <p className="text-xs sm:text-[13px] text-slate-800 font-medium tracking-normal leading-relaxed">
+                Plot No. 148, Ground Basement, Shrinanda Plaza, Cidco Waluj Mahanagar - 1, Chh. Sambhajinagar, MH 431136
+              </p>
+              <div className="border-b-[3px] border-[#1e3a8a] mt-2.5 mb-3 w-full" />
             </div>
-            <div>
-              <span>Issue Date: </span>
-              <span className="font-mono">{issueDate}</span>
+
+            {/* 2. Receipt Title */}
+            <div className="text-center my-2.5">
+              <h2 className="text-lg sm:text-[20px] font-black text-[#1e3a8a] tracking-widest uppercase inline-block pb-0.5">
+                FEES RECEIPT
+              </h2>
             </div>
-          </div>
 
-          {/* 4. Structured Data Grid Table (Exact format from PDF) */}
-          <div className="border-[1.5px] border-slate-700 overflow-hidden mb-2.5">
-            <table className="w-full text-left text-xs sm:text-[12px] border-collapse">
-              <tbody>
-                <tr className="border-b border-slate-300">
-                  <td className="w-[32%] sm:w-[28%] font-bold text-slate-900 py-1.5 px-2.5 sm:px-3 border-r border-slate-300 bg-slate-50/50">
-                    Student Name
-                  </td>
-                  <td className="font-bold text-slate-900 py-1.5 px-2.5 sm:px-3">
-                    {receipt.studentName}
-                  </td>
-                </tr>
-
-                <tr className="border-b border-slate-300">
-                  <td className="font-bold text-slate-900 py-1.5 px-2.5 sm:px-3 border-r border-slate-300 bg-slate-50/50">
-                    Contact (Student)
-                  </td>
-                  <td className="font-mono text-slate-800 py-1.5 px-2.5 sm:px-3">
-                    {receipt.studentContact}
-                  </td>
-                </tr>
-
-                <tr className="border-b border-slate-300">
-                  <td className="font-bold text-slate-900 py-1.5 px-2.5 sm:px-3 border-r border-slate-300 bg-slate-50/50">
-                    Contact (Parents)
-                  </td>
-                  <td className="font-mono text-slate-800 py-1.5 px-2.5 sm:px-3">
-                    {parentContactDisplay}
-                  </td>
-                </tr>
-
-                <tr className="border-b border-slate-300">
-                  <td className="font-bold text-slate-900 py-1.5 px-2.5 sm:px-3 border-r border-slate-300 bg-slate-50/50">
-                    Address
-                  </td>
-                  <td className="text-slate-800 py-1.5 px-2.5 sm:px-3">
-                    {studentAddress}
-                  </td>
-                </tr>
-
-                <tr className="border-b border-slate-300 bg-slate-50/30">
-                  <td className="font-bold text-slate-900 py-1.5 px-2.5 sm:px-3 border-r border-slate-300 bg-slate-50/50">
-                    Fees Paid
-                  </td>
-                  <td className="font-bold text-slate-900 py-1.5 px-2.5 sm:px-3">
-                    <span>Rs. {receipt.feesPaid}/- </span>
-                    <span className="text-[11px] sm:text-xs font-semibold text-slate-600 ml-1">
-                      {formattedAmountWords}
-                    </span>
-                  </td>
-                </tr>
-
-                <tr className="border-b border-slate-300">
-                  <td className="font-bold text-slate-900 py-1.5 px-2.5 sm:px-3 border-r border-slate-300 bg-slate-50/50">
-                    Payment Mode
-                  </td>
-                  <td className="font-semibold text-slate-800 py-1.5 px-2.5 sm:px-3 capitalize">
-                    {receipt.paymentMode || "Cash"}
-                  </td>
-                </tr>
-
-                <tr>
-                  <td className="font-bold text-slate-900 py-1.5 px-2.5 sm:px-3 border-r border-slate-300 bg-slate-50/50">
-                    Next Due Date
-                  </td>
-                  <td className="font-mono font-bold text-slate-900 py-1.5 px-2.5 sm:px-3">
-                    {nextDueDate}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          {/* 5. Terms & Conditions Separator */}
-          <div className="border-t-2 border-[#b91c1c] my-2" />
-
-          {/* 6. Terms & Conditions (Word for word from PDF, compact 1-page fit) */}
-          <div className="text-[9.5px] sm:text-[10px] text-slate-800 space-y-0.5 leading-snug">
-            <h4 className="font-bold text-[11px] text-[#1e3a8a] mb-1">
-              Terms &amp; Conditions
-            </h4>
-            <ol className="list-decimal list-outside pl-4 space-y-0.5">
-              <li>
-                Fees must be paid on or before the due date. Delay may attract a late fine or suspension of seat access.
-              </li>
-              <li>
-                Fees once paid are non-refundable and non-transferable. Keep this receipt safe and show it on request.
-              </li>
-              <li>
-                Maintain silence and discipline; keep mobile phones on silent; sit only on the allotted seat and follow allotted timings.
-              </li>
-              <li>
-                Keep the premises clean. Eating, smoking, tobacco, alcohol or any intoxicating substance is prohibited. Entry of outsiders is not permitted.
-              </li>
-              <li>
-                Misbehaviour, abusive language, quarrel, harassment or disturbance to others will not be tolerated and may lead to a warning, fine, or cancellation of membership without refund; serious cases may be reported to parents/authorities.
-              </li>
-              <li>
-                Any damage, loss or misuse of Abhyasika property (furniture, fans, lights, CCTV, books, etc.) will be recovered from the student/parents.
-              </li>
-              <li>
-                The Abhyasika is not responsible for loss of personal belongings or valuables.
-              </li>
-              <li>
-                Failure to follow the rules and regulations may result in cancellation of membership without refund. Management&apos;s decision is final.
-              </li>
-            </ol>
-          </div>
-
-          {/* 7. Signature Block (Bottom Right) - Signature graphic removed as requested; reserved for future upload */}
-          <div className="mt-3 flex justify-end">
-            <div className="text-center w-48">
-              {/* Reserved signature space */}
-              <div className="h-10 flex items-center justify-center">
-                {/* Signature will be uploaded later */}
+            {/* 3. Receipt No & Issue Date Bar */}
+            <div className="flex items-center justify-between text-xs sm:text-[13.5px] font-bold text-slate-900 mb-2 px-0.5">
+              <div>
+                <span>Receipt No.: </span>
+                <span className="font-mono">{receiptNumber}</span>
               </div>
-              <p className="font-bold text-xs text-slate-900 border-t border-slate-300 pt-1">
-                Authorized Signature
-              </p>
-              <p className="text-[11px] text-slate-700 font-medium">
-                Chanakya Abhyasika
-              </p>
+              <div>
+                <span>Issue Date: </span>
+                <span className="font-mono">{issueDate}</span>
+              </div>
+            </div>
+
+            {/* 4. Structured Data Grid Table (Scaled for authoritative 80%+ presence) */}
+            <div className="border-[1.5px] border-slate-700 overflow-hidden mb-3">
+              <table className="w-full text-left text-xs sm:text-[13px] border-collapse">
+                <tbody>
+                  <tr className="border-b border-slate-300">
+                    <td className="w-[32%] sm:w-[28%] font-bold text-slate-900 py-2.5 px-3 sm:px-4 border-r border-slate-300 bg-slate-50/50">
+                      Student Name
+                    </td>
+                    <td className="font-bold text-slate-900 py-2.5 px-3 sm:px-4">
+                      {receipt.studentName}
+                    </td>
+                  </tr>
+
+                  <tr className="border-b border-slate-300">
+                    <td className="font-bold text-slate-900 py-2.5 px-3 sm:px-4 border-r border-slate-300 bg-slate-50/50">
+                      Contact (Student)
+                    </td>
+                    <td className="font-mono text-slate-800 py-2.5 px-3 sm:px-4">
+                      {receipt.studentContact}
+                    </td>
+                  </tr>
+
+                  <tr className="border-b border-slate-300">
+                    <td className="font-bold text-slate-900 py-2.5 px-3 sm:px-4 border-r border-slate-300 bg-slate-50/50">
+                      Contact (Parents)
+                    </td>
+                    <td className="font-mono text-slate-800 py-2.5 px-3 sm:px-4">
+                      {parentContactDisplay}
+                    </td>
+                  </tr>
+
+                  <tr className="border-b border-slate-300">
+                    <td className="font-bold text-slate-900 py-2.5 px-3 sm:px-4 border-r border-slate-300 bg-slate-50/50">
+                      Address
+                    </td>
+                    <td className="text-slate-800 py-2.5 px-3 sm:px-4">
+                      {studentAddress}
+                    </td>
+                  </tr>
+
+                  <tr className="border-b border-slate-300 bg-slate-50/30">
+                    <td className="font-bold text-slate-900 py-2.5 px-3 sm:px-4 border-r border-slate-300 bg-slate-50/50">
+                      Fees Paid
+                    </td>
+                    <td className="font-bold text-slate-900 py-2.5 px-3 sm:px-4">
+                      <span className="text-sm sm:text-base font-black">Rs. {receipt.feesPaid}/- </span>
+                      <span className="text-xs sm:text-[13px] font-semibold text-slate-600 ml-1.5">
+                        {formattedAmountWords}
+                      </span>
+                    </td>
+                  </tr>
+
+                  <tr className="border-b border-slate-300">
+                    <td className="font-bold text-slate-900 py-2.5 px-3 sm:px-4 border-r border-slate-300 bg-slate-50/50">
+                      Payment Mode
+                    </td>
+                    <td className="font-semibold text-slate-800 py-2.5 px-3 sm:px-4 capitalize">
+                      {receipt.paymentMode || "Cash"}
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td className="font-bold text-slate-900 py-2.5 px-3 sm:px-4 border-r border-slate-300 bg-slate-50/50">
+                      Next Due Date
+                    </td>
+                    <td className="font-mono font-bold text-slate-900 py-2.5 px-3 sm:px-4">
+                      {nextDueDate}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* 5. Terms & Conditions Separator */}
+            <div className="border-t-2 border-[#b91c1c] my-3" />
+
+            {/* 6. Terms & Conditions (Word for word from PDF, balanced 1-page fit) */}
+            <div className="text-[10px] sm:text-[11px] text-slate-800 space-y-1 leading-snug">
+              <h4 className="font-bold text-xs sm:text-[12px] text-[#1e3a8a] mb-1.5 uppercase tracking-wide">
+                Terms &amp; Conditions
+              </h4>
+              <ol className="list-decimal list-outside pl-4 space-y-1">
+                <li>
+                  Fees must be paid on or before the due date. Delay may attract a late fine or suspension of seat access.
+                </li>
+                <li>
+                  Fees once paid are non-refundable and non-transferable. Keep this receipt safe and show it on request.
+                </li>
+                <li>
+                  Maintain silence and discipline; keep mobile phones on silent; sit only on the allotted seat and follow allotted timings.
+                </li>
+                <li>
+                  Keep the premises clean. Eating, smoking, tobacco, alcohol or any intoxicating substance is prohibited. Entry of outsiders is not permitted.
+                </li>
+                <li>
+                  Misbehaviour, abusive language, quarrel, harassment or disturbance to others will not be tolerated and may lead to a warning, fine, or cancellation of membership without refund; serious cases may be reported to parents/authorities.
+                </li>
+                <li>
+                  Any damage, loss or misuse of Abhyasika property (furniture, fans, lights, CCTV, books, etc.) will be recovered from the student/parents.
+                </li>
+                <li>
+                  The Abhyasika is not responsible for loss of personal belongings or valuables.
+                </li>
+                <li>
+                  Failure to follow the rules and regulations may result in cancellation of membership without refund. Management&apos;s decision is final.
+                </li>
+              </ol>
             </div>
           </div>
 
-          {/* 8. Footer Note */}
-          <div className="mt-2 pt-2 border-t border-slate-200 text-center text-[9px] text-slate-500 italic">
-            This is a computer-generated receipt. Payment implies acceptance of the above terms and conditions.
+          {/* Bottom Section: Reserved Signature Block & Computer-Generated Footer */}
+          <div>
+            {/* 7. Signature Block (Bottom Right) - Signature graphic removed as requested; reserved for future upload */}
+            <div className="mt-5 flex justify-end">
+              <div className="text-center w-52">
+                {/* Reserved signature space (room for stamp/signature upload) */}
+                <div className="h-14 sm:h-16 flex items-center justify-center">
+                  {/* Signature will be uploaded later */}
+                </div>
+                <p className="font-bold text-xs sm:text-[13px] text-slate-900 border-t border-slate-400 pt-1.5">
+                  Authorized Signature
+                </p>
+                <p className="text-[11px] sm:text-xs text-slate-700 font-semibold mt-0.5">
+                  Chanakya Abhyasika
+                </p>
+              </div>
+            </div>
+
+            {/* 8. Footer Note */}
+            <div className="mt-3 pt-2.5 border-t border-slate-200 text-center text-[9.5px] sm:text-[10px] text-slate-500 italic">
+              This is a computer-generated receipt. Payment implies acceptance of the above terms and conditions.
+            </div>
           </div>
         </div>
 
