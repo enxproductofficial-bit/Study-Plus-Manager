@@ -172,12 +172,12 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
       <html lang="en">
       <head>
         <meta charset="utf-8" />
-        <title>Receipt_${receipt.studentName.replace(/\\s+/g, "_")}</title>
+        <title></title>
         ${styles}
         <style>
           @page {
             size: A4 portrait;
-            margin: 12mm 15mm;
+            margin: 0mm !important; /* CRITICAL: 0mm margin strips default browser header (Date/Title) and footer (URL/Page) */
           }
           * {
             box-sizing: border-box;
@@ -185,8 +185,8 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
             print-color-adjust: exact !important;
           }
           html, body {
-            margin: 0;
-            padding: 0;
+            margin: 0 !important;
+            padding: 0 !important;
             height: 100%;
             background: #ffffff !important;
             color: #0f172a !important;
@@ -194,11 +194,11 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
           }
           .isolated-receipt-container {
             width: 100%;
-            max-width: 780px;
+            max-width: 800px;
             min-height: 85vh;
             margin: 0 auto;
             background: #ffffff !important;
-            padding: 16px 20px;
+            padding: 12mm 16mm !important; /* Content margin so text never touches the sheet edge */
             display: flex;
             flex-direction: column;
             justify-content: space-between;

@@ -36,6 +36,10 @@ body {
 }
 
 @media print {
+  @page {
+    margin: 0 !important; /* Strips browser header & footer */
+  }
+
   /* Hide all dashboard chrome: header, nav, sidebar, buttons */
   header,
   aside,
@@ -48,5 +52,7 @@ body {
   body {
     background: #ffffff !important;
     color: #0f172a !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 }
