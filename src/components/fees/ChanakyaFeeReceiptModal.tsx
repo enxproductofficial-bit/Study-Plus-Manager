@@ -122,9 +122,9 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
   const formattedAmountWords = amountToIndianWords(receipt.feesPaid);
 
   // Receipt numbering: ensure CA/... style
-  let receiptNumber = receipt.receiptNo;
-  if (!receiptNumber.startsWith("CA/")) {
-    const rawDigits = receiptNumber.replace(/\D/g, "").slice(-4) || "01";
+  let receiptNumber = receipt.receiptNo || "";
+  if (!receiptNumber || !receiptNumber.startsWith("CA/")) {
+    const rawDigits = (receiptNumber || "").replace(/\D/g, "").slice(-4) || "01";
     const currentYear = today.getFullYear();
     const currentMonth = String(today.getMonth() + 1).padStart(2, "0");
     receiptNumber = `CA/${currentYear}/${currentMonth}/${rawDigits}`;

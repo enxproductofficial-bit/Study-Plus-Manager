@@ -29,15 +29,20 @@ export default function Home() {
   useEffect(() => {
     try {
       const stored = localStorage.getItem("granthsetu_user");
-      if (stored) {
+      if (stored && stored !== "undefined" && stored !== "null") {
         const parsed = JSON.parse(stored);
-        setCurrentUser(parsed);
-        if (parsed.branchName) {
-          setCurrentBranch(parsed.branchName);
+        if (parsed && typeof parsed === "object") {
+          setCurrentUser(parsed);
+          if (parsed.branchName) {
+            setCurrentBranch(parsed.branchName);
+          }
         }
       }
     } catch (e) {
       console.error("Auth restore error:", e);
+      try {
+        localStorage.removeItem("granthsetu_user");
+      } catch {}
     } finally {
       setIsInitializing(false);
     }

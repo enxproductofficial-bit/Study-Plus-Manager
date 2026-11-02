@@ -114,10 +114,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
           { id: "receipts" as NavTab, label: "Download Receipts", icon: Receipt },
           { id: "notices" as NavTab, label: "Notices & Announcements", icon: Bell },
         ];
+
+      default:
+        return [
+          { id: "dashboard" as NavTab, label: t("nav_dashboard"), icon: LayoutDashboard },
+          { id: "students" as NavTab, label: t("nav_students"), icon: Users },
+          { id: "admission" as NavTab, label: t("nav_admission"), icon: UserPlus },
+          { id: "seats" as NavTab, label: t("nav_seats"), icon: Armchair },
+          { id: "fees" as NavTab, label: t("nav_fees"), icon: IndianRupee },
+          { id: "enquiries" as NavTab, label: t("nav_enquiries"), icon: Users2 },
+          { id: "expenses" as NavTab, label: t("nav_expenses"), icon: FileSpreadsheet },
+          { id: "staff" as NavTab, label: t("nav_staff"), icon: UserCheck },
+          { id: "reports" as NavTab, label: t("nav_reports"), icon: FileText },
+          { id: "notices" as NavTab, label: t("nav_notices"), icon: Bell },
+          { id: "settings" as NavTab, label: t("nav_settings"), icon: Settings },
+        ];
     }
   };
 
-  const navItems = getNavItems();
+  const navItems = getNavItems() || [];
 
   return (
     <aside className="flex h-screen w-64 flex-col justify-between bg-[#0c192e] text-slate-200 flex-shrink-0 select-none border-r border-slate-800/80">

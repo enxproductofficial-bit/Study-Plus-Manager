@@ -1234,8 +1234,12 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const t = (key: string): string => {
-    const dict = translations[lang] || translations.en;
-    return dict[key] || translations.en[key] || key;
+    try {
+      const dict = (translations && translations[lang]) ? translations[lang] : (translations ? translations.en : {});
+      return (dict && dict[key]) || (translations && translations.en && translations.en[key]) || key || "";
+    } catch {
+      return key || "";
+    }
   };
 
   return (
