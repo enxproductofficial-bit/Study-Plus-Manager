@@ -176,15 +176,15 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
         ${styles}
         <style>
           @page {
-            size: A5 portrait;
-            margin: 6mm;
+            size: A4 portrait;
+            margin: 10mm 12mm;
           }
           * {
             box-sizing: border-box;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
-          body {
+          html, body {
             margin: 0;
             padding: 0;
             background: #ffffff !important;
@@ -193,10 +193,12 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
           }
           .isolated-receipt-container {
             width: 100%;
-            max-width: 620px;
+            max-width: 650px;
             margin: 0 auto;
             background: #ffffff !important;
-            padding: 8px;
+            padding: 10px;
+            page-break-inside: avoid;
+            break-inside: avoid;
           }
         </style>
       </head>
@@ -249,55 +251,25 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
         <div
           ref={receiptRef}
           id="chanakya-official-receipt"
-          className="bg-white p-6 sm:p-10 font-sans text-slate-900 leading-normal select-text print:p-8"
+          className="bg-white p-5 sm:p-6 font-sans text-slate-900 leading-normal select-text max-w-[650px] mx-auto"
         >
-          {/* 1. Header with Calligraphic Logo */}
-          <div className="text-center mb-3">
-            {/* Logo Graphic */}
-            <div className="inline-flex flex-col items-center justify-center mb-1">
-              <div className="flex items-center gap-1.5">
-                <span className="font-black text-2xl sm:text-3xl text-[#dc2626] tracking-tight font-serif drop-shadow-xs">
-                  चाणक्य
-                </span>
-                {/* Sun burst rays icon */}
-                <svg
-                  viewBox="0 0 24 24"
-                  className="w-5 h-5 text-amber-500 fill-amber-500 inline-block animate-pulse"
-                >
-                  <circle cx="12" cy="12" r="4" />
-                  <path
-                    d="M12 2v3M12 19v3M2 12h3M19 12h3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M4.93 19.07l2.12-2.12M16.95 7.05l2.12-2.12"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </div>
-              <div className="flex flex-col items-center -mt-1">
-                <span className="font-black text-xl sm:text-2xl text-[#0f172a] tracking-tight font-serif">
-                  अभ्यासिका
-                </span>
-                <span className="text-[8px] tracking-[0.25em] font-bold text-slate-400 uppercase -mt-0.5">
-                  STANDERD
-                </span>
-              </div>
-            </div>
-
-            {/* Official Address */}
-            <p className="text-[10px] sm:text-[11px] text-slate-700 font-medium max-w-xl mx-auto leading-relaxed border-t border-slate-200 pt-1.5 mt-1">
+          {/* 1. Header: Address + Solid Blue Line (Logo removed as requested; reserved for future upload) */}
+          <div className="text-center mb-2">
+            <p className="text-[11px] sm:text-[11.5px] text-slate-800 font-medium tracking-normal leading-relaxed">
               Plot No. 148, Ground Basement, Shrinanda Plaza, Cidco Waluj Mahanagar - 1, Chh. Sambhajinagar, MH 431136
             </p>
+            <div className="border-b-[2.5px] border-[#1e3a8a] mt-2 mb-2 w-full" />
           </div>
 
           {/* 2. Receipt Title */}
-          <div className="text-center my-3">
-            <h2 className="text-base sm:text-lg font-black text-[#1e3a8a] tracking-wider uppercase border-b-2 border-[#1e3a8a] inline-block px-6 pb-0.5">
+          <div className="text-center my-2">
+            <h2 className="text-base sm:text-[17px] font-black text-[#1e3a8a] tracking-wider uppercase inline-block pb-0.5">
               FEES RECEIPT
             </h2>
           </div>
 
           {/* 3. Receipt No & Issue Date Bar */}
-          <div className="flex items-center justify-between text-xs sm:text-[13px] font-bold text-slate-900 mb-2 px-0.5">
+          <div className="flex items-center justify-between text-xs sm:text-[12.5px] font-bold text-slate-900 mb-1.5 px-0.5">
             <div>
               <span>Receipt No.: </span>
               <span className="font-mono">{receiptNumber}</span>
@@ -309,50 +281,50 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
           </div>
 
           {/* 4. Structured Data Grid Table (Exact format from PDF) */}
-          <div className="border-2 border-slate-400 overflow-hidden mb-4">
-            <table className="w-full text-left text-xs sm:text-[13px] border-collapse">
+          <div className="border-[1.5px] border-slate-700 overflow-hidden mb-2.5">
+            <table className="w-full text-left text-xs sm:text-[12px] border-collapse">
               <tbody>
                 <tr className="border-b border-slate-300">
-                  <td className="w-[32%] sm:w-[28%] font-bold text-slate-900 p-2 sm:p-2.5 border-r border-slate-300 bg-slate-50/50">
+                  <td className="w-[32%] sm:w-[28%] font-bold text-slate-900 py-1.5 px-2.5 sm:px-3 border-r border-slate-300 bg-slate-50/50">
                     Student Name
                   </td>
-                  <td className="font-bold text-slate-900 p-2 sm:p-2.5">
+                  <td className="font-bold text-slate-900 py-1.5 px-2.5 sm:px-3">
                     {receipt.studentName}
                   </td>
                 </tr>
 
                 <tr className="border-b border-slate-300">
-                  <td className="font-bold text-slate-900 p-2 sm:p-2.5 border-r border-slate-300 bg-slate-50/50">
+                  <td className="font-bold text-slate-900 py-1.5 px-2.5 sm:px-3 border-r border-slate-300 bg-slate-50/50">
                     Contact (Student)
                   </td>
-                  <td className="font-mono text-slate-800 p-2 sm:p-2.5">
+                  <td className="font-mono text-slate-800 py-1.5 px-2.5 sm:px-3">
                     {receipt.studentContact}
                   </td>
                 </tr>
 
                 <tr className="border-b border-slate-300">
-                  <td className="font-bold text-slate-900 p-2 sm:p-2.5 border-r border-slate-300 bg-slate-50/50">
+                  <td className="font-bold text-slate-900 py-1.5 px-2.5 sm:px-3 border-r border-slate-300 bg-slate-50/50">
                     Contact (Parents)
                   </td>
-                  <td className="font-mono text-slate-800 p-2 sm:p-2.5">
+                  <td className="font-mono text-slate-800 py-1.5 px-2.5 sm:px-3">
                     {parentContactDisplay}
                   </td>
                 </tr>
 
                 <tr className="border-b border-slate-300">
-                  <td className="font-bold text-slate-900 p-2 sm:p-2.5 border-r border-slate-300 bg-slate-50/50">
+                  <td className="font-bold text-slate-900 py-1.5 px-2.5 sm:px-3 border-r border-slate-300 bg-slate-50/50">
                     Address
                   </td>
-                  <td className="text-slate-800 p-2 sm:p-2.5">
+                  <td className="text-slate-800 py-1.5 px-2.5 sm:px-3">
                     {studentAddress}
                   </td>
                 </tr>
 
                 <tr className="border-b border-slate-300 bg-slate-50/30">
-                  <td className="font-bold text-slate-900 p-2 sm:p-2.5 border-r border-slate-300 bg-slate-50/50">
+                  <td className="font-bold text-slate-900 py-1.5 px-2.5 sm:px-3 border-r border-slate-300 bg-slate-50/50">
                     Fees Paid
                   </td>
-                  <td className="font-bold text-slate-900 p-2 sm:p-2.5">
+                  <td className="font-bold text-slate-900 py-1.5 px-2.5 sm:px-3">
                     <span>Rs. {receipt.feesPaid}/- </span>
                     <span className="text-[11px] sm:text-xs font-semibold text-slate-600 ml-1">
                       {formattedAmountWords}
@@ -361,19 +333,19 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
                 </tr>
 
                 <tr className="border-b border-slate-300">
-                  <td className="font-bold text-slate-900 p-2 sm:p-2.5 border-r border-slate-300 bg-slate-50/50">
+                  <td className="font-bold text-slate-900 py-1.5 px-2.5 sm:px-3 border-r border-slate-300 bg-slate-50/50">
                     Payment Mode
                   </td>
-                  <td className="font-semibold text-slate-800 p-2 sm:p-2.5 capitalize">
+                  <td className="font-semibold text-slate-800 py-1.5 px-2.5 sm:px-3 capitalize">
                     {receipt.paymentMode || "Cash"}
                   </td>
                 </tr>
 
                 <tr>
-                  <td className="font-bold text-slate-900 p-2 sm:p-2.5 border-r border-slate-300 bg-slate-50/50">
+                  <td className="font-bold text-slate-900 py-1.5 px-2.5 sm:px-3 border-r border-slate-300 bg-slate-50/50">
                     Next Due Date
                   </td>
-                  <td className="font-mono font-bold text-slate-900 p-2 sm:p-2.5">
+                  <td className="font-mono font-bold text-slate-900 py-1.5 px-2.5 sm:px-3">
                     {nextDueDate}
                   </td>
                 </tr>
@@ -382,14 +354,14 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
           </div>
 
           {/* 5. Terms & Conditions Separator */}
-          <div className="border-t-2 border-red-500 mb-3" />
+          <div className="border-t-2 border-[#b91c1c] my-2" />
 
-          {/* 6. Terms & Conditions (Word for word from PDF) */}
-          <div className="text-[10px] sm:text-[11px] text-slate-800 space-y-1 leading-snug">
-            <h4 className="font-bold text-xs sm:text-[12px] text-slate-900 mb-1.5 underline">
+          {/* 6. Terms & Conditions (Word for word from PDF, compact 1-page fit) */}
+          <div className="text-[9.5px] sm:text-[10px] text-slate-800 space-y-0.5 leading-snug">
+            <h4 className="font-bold text-[11px] text-[#1e3a8a] mb-1">
               Terms &amp; Conditions
             </h4>
-            <ol className="list-decimal list-outside pl-4 space-y-1">
+            <ol className="list-decimal list-outside pl-4 space-y-0.5">
               <li>
                 Fees must be paid on or before the due date. Delay may attract a late fine or suspension of seat access.
               </li>
@@ -417,37 +389,24 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
             </ol>
           </div>
 
-          {/* 7. Signature Block (Bottom Right) */}
-          <div className="mt-6 flex justify-end">
+          {/* 7. Signature Block (Bottom Right) - Signature graphic removed as requested; reserved for future upload */}
+          <div className="mt-3 flex justify-end">
             <div className="text-center w-48">
-              {/* Authorized Signature SVG graphic */}
+              {/* Reserved signature space */}
               <div className="h-10 flex items-center justify-center">
-                <svg
-                  viewBox="0 0 160 50"
-                  className="w-36 h-10 text-slate-900 fill-none stroke-current"
-                  style={{ strokeWidth: 1.8, strokeLinecap: "round" }}
-                >
-                  {/* Stylized 'Rohit' cursive signature path matching PDF */}
-                  <path d="M15,35 C20,15 25,10 32,22 C37,30 42,32 46,24 C50,15 54,12 58,25 C62,35 68,36 75,25 C80,18 84,20 88,30 C95,20 102,15 110,24 C118,32 125,28 135,15" />
-                  <path d="M28,8 L32,42" />
-                  <path d="M20,38 Q75,48 145,28" />
-                  <circle cx="112" cy="10" r="1.5" fill="currentColor" />
-                  <circle cx="138" cy="38" r="1" fill="currentColor" />
-                  <circle cx="142" cy="40" r="1" fill="currentColor" />
-                  <circle cx="146" cy="42" r="1" fill="currentColor" />
-                </svg>
+                {/* Signature will be uploaded later */}
               </div>
-              <p className="font-bold text-xs text-slate-900 mt-1">
+              <p className="font-bold text-xs text-slate-900 border-t border-slate-300 pt-1">
                 Authorized Signature
               </p>
-              <p className="text-[11px] text-slate-700">
+              <p className="text-[11px] text-slate-700 font-medium">
                 Chanakya Abhyasika
               </p>
             </div>
           </div>
 
           {/* 8. Footer Note */}
-          <div className="mt-5 pt-3 border-t border-slate-200 text-center text-[9.5px] sm:text-[10px] text-slate-500 italic">
+          <div className="mt-2 pt-2 border-t border-slate-200 text-center text-[9px] text-slate-500 italic">
             This is a computer-generated receipt. Payment implies acceptance of the above terms and conditions.
           </div>
         </div>
