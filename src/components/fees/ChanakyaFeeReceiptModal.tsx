@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useRef } from "react";
-import { Printer, Download, Share2, X } from "lucide-react";
+import React, { useRef, useState } from "react";
+import { Download, X, Loader2 } from "lucide-react";
 
 export interface FeeReceiptData {
   receiptNo: string;
@@ -138,12 +138,73 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
       : "XXX"
     : "XXX";
 
-  // Handle Download PDF Action (Isolates ONLY the receipt, removing all remaining page details)
-  const handleDownloadPdf = () => {
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  // Dynamically load html2pdf for direct 1-click file download (no print dialog)
+  const loadHtml2Pdf = (): Promise<any> => {
+    if (typeof window !== "undefined" && (window as any).html2pdf) {
+      return Promise.resolve((window as any).html2pdf);
+    }
+    return new Promise((resolve, reject) => {
+      const existing = document.getElementById("html2pdf-cdn-script");
+      if (existing) {
+        existing.addEventListener("load", () => resolve((window as any).html2pdf));
+        return;
+      }
+      const script = document.createElement("script");
+      script.id = "html2pdf-cdn-script";
+      script.src =
+        "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+      script.onload = () => resolve((window as any).html2pdf);
+      script.onerror = () => reject(new Error("Unable to load html2pdf engine"));
+      document.head.appendChild(script);
+    });
+  };
+
+  // Direct 1-Click PDF Download: Saves file directly to Downloads folder (NO print window)
+  const handleDownloadPdf = async () => {
     const receiptEl = document.getElementById("chanakya-official-receipt");
     if (!receiptEl) return;
 
-    // Create an isolated hidden iframe so ONLY the receipt is printed to PDF
+    setIsDownloading(true);
+    try {
+      const html2pdf = await loadHtml2Pdf();
+      const safeStudentName = (receipt.studentName || "Student").replace(/[^a-zA-Z0-9]/g, "_");
+      const filename = `Receipt_${safeStudentName}.pdf`;
+
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: filename,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: "#ffffff",
+        },
+        jsPDF: {
+          unit: "mm",
+          format: "a4",
+          orientation: "portrait",
+        },
+        pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+      };
+
+      await html2pdf().set(opt).from(receiptEl).save();
+    } catch (err) {
+      console.warn("Direct PDF engine fallback to isolated print:", err);
+      // Fallback: If network blocks CDN, open clean isolated print window
+      triggerIsolatedPrint();
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  // Clean fallback if direct engine cannot be reached
+  const triggerIsolatedPrint = () => {
+    const receiptEl = document.getElementById("chanakya-official-receipt");
+    if (!receiptEl) return;
+
     const iframe = document.createElement("iframe");
     iframe.style.position = "fixed";
     iframe.style.right = "0";
@@ -159,7 +220,6 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
       return;
     }
 
-    // Collect all loaded stylesheets and style tags
     const styles = Array.from(
       document.querySelectorAll("style, link[rel='stylesheet']")
     )
@@ -175,36 +235,10 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
         <title></title>
         ${styles}
         <style>
-          @page {
-            size: A4 portrait;
-            margin: 0mm !important; /* CRITICAL: 0mm margin strips default browser header (Date/Title) and footer (URL/Page) */
-          }
-          * {
-            box-sizing: border-box;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-          html, body {
-            margin: 0 !important;
-            padding: 0 !important;
-            height: 100%;
-            background: #ffffff !important;
-            color: #0f172a !important;
-            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-          }
-          .isolated-receipt-container {
-            width: 100%;
-            max-width: 800px;
-            min-height: 85vh;
-            margin: 0 auto;
-            background: #ffffff !important;
-            padding: 12mm 16mm !important; /* Content margin so text never touches the sheet edge */
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            page-break-inside: avoid;
-            break-inside: avoid;
-          }
+          @page { size: A4 portrait; margin: 0mm !important; }
+          * { box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+          html, body { margin: 0 !important; padding: 0 !important; height: 100%; background: #ffffff !important; color: #0f172a !important; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+          .isolated-receipt-container { width: 100%; max-width: 800px; min-height: 85vh; margin: 0 auto; background: #ffffff !important; padding: 12mm 16mm !important; display: flex; flex-direction: column; justify-content: space-between; page-break-inside: avoid; break-inside: avoid; }
         </style>
       </head>
       <body>
@@ -216,7 +250,6 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
     `);
     doc.close();
 
-    // Allow 400ms for browser to render styles before opening print/save-to-PDF dialog
     setTimeout(() => {
       iframe.contentWindow?.focus();
       iframe.contentWindow?.print();
@@ -431,11 +464,21 @@ export const ChanakyaFeeReceiptModal: React.FC<ChanakyaFeeReceiptModalProps> = (
           <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
             <button
               type="button"
+              disabled={isDownloading}
               onClick={handleDownloadPdf}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-2.5 text-xs font-bold text-white shadow-sm transition active:scale-98"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-5 py-2.5 text-xs font-bold text-white shadow-sm transition active:scale-98 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              <Download className="h-4 w-4" />
-              <span>Download PDF</span>
+              {isDownloading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Downloading PDF...</span>
+                </>
+              ) : (
+                <>
+                  <Download className="h-4 w-4" />
+                  <span>Download PDF</span>
+                </>
+              )}
             </button>
 
             <button
