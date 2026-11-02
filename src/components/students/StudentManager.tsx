@@ -24,6 +24,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { StudentIdCard } from "@/components/admissions/StudentIdCard";
+import { ChanakyaFeeReceiptModal } from "@/components/fees/ChanakyaFeeReceiptModal";
 import { useTranslation } from "@/lib/i18n";
 
 interface StudentRecord {
@@ -794,102 +795,27 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
         </div>
       )}
 
-      {/* 3. Fee Receipt Modal: PDF / Print / WhatsApp (Photo 2 Item 2) */}
-      {selectedStudentForReceipt && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-slate-900 p-6 shadow-2xl border border-slate-200 dark:border-slate-800 my-6">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-              <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
-                <CreditCard className="h-5 w-5 text-emerald-600" />
-                <span>GST Tax Fee Receipt</span>
-              </h3>
-              <button
-                onClick={() => setSelectedStudentForReceipt(null)}
-                className="rounded-full p-1 text-slate-400 hover:text-slate-600"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Printable Receipt Paper */}
-            <div className="my-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/80 p-5 text-xs text-slate-800 dark:text-slate-200 space-y-3 font-sans">
-              <div className="text-center border-b border-dashed border-slate-300 dark:border-slate-700 pb-3">
-                <h4 className="font-black text-sm text-indigo-700 dark:text-indigo-400">GranthSetu Abhyasika</h4>
-                <p className="text-[10px] text-slate-500">StudyPlus Centre • Main Branch, Shivaji Nagar</p>
-                <p className="text-[10px] font-mono font-semibold text-slate-600 dark:text-slate-400">
-                  Receipt No: RCP-2026-{selectedStudentForReceipt.studentRegNo.slice(-4)}
-                </p>
-              </div>
-
-              <div className="space-y-1.5 text-[11px]">
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Student Name:</span>
-                  <span className="font-bold text-slate-900 dark:text-white">{selectedStudentForReceipt.fullName}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Mother&apos;s Name:</span>
-                  <span className="font-semibold">{selectedStudentForReceipt.motherName || "Sunita Patil"}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Desk / Shift:</span>
-                  <span className="font-bold text-indigo-600 dark:text-indigo-400">
-                    {selectedStudentForReceipt.seatNumber} ({selectedStudentForReceipt.shiftName})
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Plan:</span>
-                  <span>{selectedStudentForReceipt.feePlanName}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Payment Date:</span>
-                  <span>{new Date().toLocaleDateString("en-IN")}</span>
-                </div>
-              </div>
-
-              <div className="border-t border-b border-dashed border-slate-300 dark:border-slate-700 py-2.5 my-2 flex justify-between items-center text-sm">
-                <span className="font-bold">Total Paid:</span>
-                <span className="font-black text-emerald-600 text-base">₹1,800.00</span>
-              </div>
-
-              <div className="text-[10px] text-slate-500 text-center">
-                This is a computer-generated receipt authorized by GranthSetu & Enterprenex Solution Pvt. Ltd.
-              </div>
-            </div>
-
-            {/* Receipt Actions: Print, PDF, WhatsApp (Photo 2 Item 2) */}
-            <div className="space-y-2">
-              <button
-                type="button"
-                onClick={() => handleSendReceiptWhatsApp(selectedStudentForReceipt)}
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-600 py-2.5 text-xs font-bold text-white hover:bg-emerald-700 shadow-xs"
-              >
-                <span>Send to WhatsApp Automatically</span>
-                <span className="text-[10px] bg-emerald-700 px-1.5 py-0.5 rounded">Fast</span>
-              </button>
-
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => window.print()}
-                  className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 dark:border-slate-700 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
-                >
-                  <span>Print Receipt</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    showAlert("✓ PDF receipt downloaded to your device.");
-                  }}
-                  className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 dark:bg-indigo-950 dark:border-indigo-800 py-2 text-xs font-bold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100"
-                >
-                  <Download className="h-3.5 w-3.5" />
-                  <span>Download PDF</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* 3. Chanakya Fees Receipt Modal (A5 Standardized Format) */}
+      <ChanakyaFeeReceiptModal
+        receipt={
+          selectedStudentForReceipt
+            ? {
+                receiptNo: `CA/${new Date().getFullYear()}/${String(new Date().getMonth() + 1).padStart(2, "0")}/${selectedStudentForReceipt.id.slice(-3) || "01"}`,
+                issueDate: new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" }),
+                studentName: selectedStudentForReceipt.fullName,
+                studentContact: selectedStudentForReceipt.mobile,
+                parentContact: selectedStudentForReceipt.parentMobile,
+                address: selectedStudentForReceipt.address || "Cidco Waluj Mahanagar-1",
+                feesPaid: selectedStudentForReceipt.monthlyFees?.[0]?.amount || 600,
+                paymentMode: "Cash",
+                nextDueDate: "01-12-2026",
+                branchName: "चाणक्य अभ्यासिका",
+                branchAddress: "Plot No. 148, Ground Basement, Shrinanda Plaza, Cidco Waluj Mahanagar - 1, Chh. Sambhajinagar, MH 431136",
+              }
+            : null
+        }
+        onClose={() => setSelectedStudentForReceipt(null)}
+      />
 
       {/* 4. CR80 PVC Printable ID Card Modal */}
       {selectedStudentForIdCard && (
