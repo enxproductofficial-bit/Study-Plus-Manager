@@ -50,7 +50,7 @@ export type NavTab =
 interface SidebarProps {
   currentTab: NavTab;
   onTabChange: (tab: NavTab) => void;
-  userRole: "SUPER_ADMIN" | "OWNER" | "STAFF" | "STUDENT";
+  userRole: "SUPER_ADMIN" | "OWNER" | "STAFF";
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -102,17 +102,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           { id: "enquiries" as NavTab, label: "Front-Desk Enquiries", icon: Users2 },
           { id: "notices" as NavTab, label: "Student Alerts", icon: Bell },
           { id: "reports" as NavTab, label: "Daily Counter Logs", icon: FileText },
-        ];
-
-      case "STUDENT":
-        return [
-          { id: "dashboard" as NavTab, label: "My Dashboard", icon: LayoutDashboard },
-          { id: "profile" as NavTab, label: "My Profile", icon: User },
-          { id: "seats" as NavTab, label: "My Allotted Seat", icon: Armchair },
-          { id: "attendance" as NavTab, label: "My Attendance", icon: QrCode },
-          { id: "fees" as NavTab, label: "Fee History & Pay", icon: IndianRupee },
-          { id: "receipts" as NavTab, label: "Download Receipts", icon: Receipt },
-          { id: "notices" as NavTab, label: "Notices & Announcements", icon: Bell },
         ];
 
       default:

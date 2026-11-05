@@ -140,7 +140,7 @@ export async function POST(request: Request) {
     }
 
     // 4. Create User Record
-    const userRole = role === "OWNER" ? UserRole.OWNER : role === "STAFF" ? UserRole.STAFF : UserRole.STUDENT;
+    const userRole = role === "OWNER" ? UserRole.OWNER : UserRole.STAFF;
 
     const newUser = await prisma.user.create({
       data: {

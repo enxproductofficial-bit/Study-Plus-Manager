@@ -60,7 +60,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
   // Interactive Seat Map Demo State
   const [selectedShift, setSelectedShift] = useState<string>("Morning");
-  const [previewTab, setPreviewTab] = useState<"owner" | "staff" | "student">("owner");
+  const [previewTab, setPreviewTab] = useState<"owner" | "staff">("owner");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(0);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
@@ -291,13 +291,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   >
                     <UserCheck className="h-3.5 w-3.5 text-indigo-400" />
                     {t("portal_staff")}
-                  </Link>
-                  <Link
-                    href="/student"
-                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900/60 px-3 py-1.5 text-[11px] font-bold text-slate-300 hover:bg-slate-800 transition"
-                  >
-                    <Users className="h-3.5 w-3.5 text-slate-400" />
-                    {t("portal_student")}
                   </Link>
                   <Link
                     href="/super-admin"
@@ -983,16 +976,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               >
                 🧑‍💼 Staff Operations
               </button>
-              <button
-                onClick={() => setPreviewTab("student")}
-                className={`rounded-xl px-5 py-2.5 text-xs font-bold transition-all ${
-                  previewTab === "student"
-                    ? "bg-blue-600 text-white font-black shadow-md"
-                    : "text-slate-400 hover:text-white"
-                }`}
-              >
-                🎓 Student Self-Portal
-              </button>
             </div>
           </div>
 
@@ -1062,38 +1045,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                     <Armchair className="h-6 w-6 text-sky-400 mb-2" />
                     <h4 className="text-sm font-bold text-white">Instant Seat Allotment</h4>
                     <p className="text-xs text-slate-400 mt-1">Assign vacant seats or transfer shifts without seeing centre-level financial P&L.</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {previewTab === "student" && (
-              <div className="space-y-6">
-                <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
-                  <div>
-                    <h3 className="text-lg font-bold text-white">Student Self-Service Portal</h3>
-                    <p className="text-xs text-slate-400">Students log in via mobile OTP to view their allocated desk, attendance logs, and pay dues.</p>
-                  </div>
-                  <span className="rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 px-3 py-1 text-xs font-bold">
-                    Student Member Role
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 text-left">
-                    <Armchair className="h-6 w-6 text-blue-400 mb-2" />
-                    <h4 className="text-sm font-bold text-white">Desk S-12 (Morning)</h4>
-                    <p className="text-xs text-slate-400 mt-1">View allocated desk, shift hours (06:00 - 14:00), locker status, and renewal validity.</p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 text-left">
-                    <Clock className="h-6 w-6 text-indigo-400 mb-2" />
-                    <h4 className="text-sm font-bold text-white">Study Hours Tracker</h4>
-                    <p className="text-xs text-slate-400 mt-1">Track monthly sitting hours (142 hrs logged this month) to boost competitive study focus.</p>
-                  </div>
-                  <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 text-left">
-                    <FileText className="h-6 w-6 text-amber-400 mb-2" />
-                    <h4 className="text-sm font-bold text-white">Fee Receipts & Pay UPI</h4>
-                    <p className="text-xs text-slate-400 mt-1">One-click online renewal via Razorpay UPI and instant download of GST fee receipts.</p>
                   </div>
                 </div>
               </div>

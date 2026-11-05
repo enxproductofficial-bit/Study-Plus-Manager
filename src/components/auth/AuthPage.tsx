@@ -31,7 +31,7 @@ export interface AuthUser {
   name: string;
   mobile: string;
   email?: string | null;
-  role: "SUPER_ADMIN" | "OWNER" | "STAFF" | "STUDENT";
+  role: "SUPER_ADMIN" | "OWNER" | "STAFF";
   branchId?: string | null;
   branchName?: string;
   branchCode?: string;
@@ -59,7 +59,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   const [loginPassword, setLoginPassword] = useState("admin123");
 
   // Signup Form State
-  const [signupRole, setSignupRole] = useState<"OWNER" | "STAFF" | "STUDENT">("OWNER");
+  const [signupRole, setSignupRole] = useState<"OWNER" | "STAFF">("OWNER");
   const [signupName, setSignupName] = useState("");
   const [signupMobile, setSignupMobile] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
@@ -74,7 +74,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   const [forgotSent, setForgotSent] = useState(false);
 
   // Quick Demo Logins
-  const handleDemoSelect = (role: "SUPER_ADMIN" | "OWNER" | "STAFF" | "STUDENT") => {
+  const handleDemoSelect = (role: "SUPER_ADMIN" | "OWNER" | "STAFF") => {
     setError(null);
     if (role === "SUPER_ADMIN") {
       setLoginIdentifier("9226860060");
@@ -85,9 +85,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({
     } else if (role === "STAFF") {
       setLoginIdentifier("9876543211");
       setLoginPassword("staff123");
-    } else {
-      setLoginIdentifier("9226860060");
-      setLoginPassword("student123");
     }
   };
 
@@ -274,7 +271,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-700 block mb-2">
               Select Demo Login Role:
             </span>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => handleDemoSelect("SUPER_ADMIN")}
@@ -312,19 +309,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({
               >
                 <User className="h-3.5 w-3.5 text-blue-500" />
                 Staff Desk
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleDemoSelect("STUDENT")}
-                className={`rounded-xl px-2.5 py-1.5 text-[11px] font-bold transition flex items-center justify-center gap-1.5 ${
-                  loginPassword === "student123"
-                    ? "bg-purple-600 text-white shadow-sm"
-                    : "bg-white text-slate-700 border border-slate-200 hover:bg-slate-100"
-                }`}
-              >
-                <Users className="h-3.5 w-3.5 text-purple-500" />
-                Student
               </button>
             </div>
           </div>

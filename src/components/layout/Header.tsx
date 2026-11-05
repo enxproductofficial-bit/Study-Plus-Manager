@@ -17,7 +17,7 @@ import { useTranslation, LANGUAGE_OPTIONS, SupportedLanguage } from "@/lib/i18n"
 interface HeaderProps {
   currentBranch: string;
   onBranchChange: (branch: string) => void;
-  userRole: "SUPER_ADMIN" | "OWNER" | "STAFF" | "STUDENT";
+  userRole: "SUPER_ADMIN" | "OWNER" | "STAFF";
   userName: string;
   onToggleRole?: () => void;
   onLogout?: () => void;

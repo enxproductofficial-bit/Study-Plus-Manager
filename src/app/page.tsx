@@ -104,8 +104,6 @@ export default function Home() {
           }
           if (user.role === "SUPER_ADMIN") {
             window.location.href = "/super-admin";
-          } else if (user.role === "STUDENT") {
-            window.location.href = "/student";
           } else {
             setViewMode("app");
           }
