@@ -67,6 +67,13 @@ export const AdmissionForm: React.FC = () => {
   const [recentAdmissions, setRecentAdmissions] = useState<RecentStudent[]>([]);
   const [loadingMaster, setLoadingMaster] = useState<boolean>(true);
   const [masterError, setMasterError] = useState<string | null>(null);
+  const [selfAdmissionUrl, setSelfAdmissionUrl] = useState<string>("http://localhost:3000/admission/self");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setSelfAdmissionUrl(`${window.location.origin}/admission/self`);
+    }
+  }, []);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -493,7 +500,7 @@ export const AdmissionForm: React.FC = () => {
             <div className="mx-auto flex h-52 w-52 items-center justify-center rounded-2xl bg-white p-3 border-2 border-indigo-200 dark:border-indigo-800 shadow-md">
               <img
                 src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
-                  typeof window !== "undefined" ? `${window.location.origin}/admission/self` : "http://localhost:3000/admission/self"
+                  selfAdmissionUrl
                 )}`}
                 alt="Student Self-Admission QR Code"
                 className="h-full w-full object-contain"

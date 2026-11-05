@@ -82,6 +82,13 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
   // Pending QR Self Admissions Queue (Photo 2 Item 1b)
   const [pendingSelfAdmissions, setPendingSelfAdmissions] = useState<PendingSelfAdmission[]>([]);
   const [showQrFlyerModal, setShowQrFlyerModal] = useState(false);
+  const [selfAdmissionUrl, setSelfAdmissionUrl] = useState<string>("http://localhost:3000/admission/self");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setSelfAdmissionUrl(`${window.location.origin}/admission/self`);
+    }
+  }, []);
 
   // Modals & Active Selections
   const [selectedStudentForProfile, setSelectedStudentForProfile] = useState<StudentRecord | null>(null);
@@ -874,7 +881,7 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
                 {/* Visual QR Code Display */}
                 <img
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
-                    typeof window !== "undefined" ? `${window.location.origin}/admission/self` : "http://localhost:3000/admission/self"
+                    selfAdmissionUrl
                   )}`}
                   alt="Student Self-Admission QR Code"
                   className="h-full w-full object-contain"
