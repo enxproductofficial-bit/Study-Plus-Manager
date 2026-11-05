@@ -29,6 +29,8 @@ import {
   UserCheck,
   BarChart3,
   BookOpen,
+  Lock,
+  LogIn,
 } from "lucide-react";
 
 interface SuperAdminStats {
@@ -86,6 +88,7 @@ interface TransactionItem {
 }
 
 export default function SuperAdminPortal() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [activeTab, setActiveTab] = useState<
     "dashboard" | "libraries" | "transactions" | "subscriptions" | "audit"
   >("dashboard");
@@ -103,8 +106,23 @@ export default function SuperAdminPortal() {
   const [txStatusFilter, setTxStatusFilter] = useState("ALL");
   const [txRangeFilter, setTxRangeFilter] = useState("30D");
 
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("granthsetu_user");
+      if (stored && stored !== "undefined" && stored !== "null") {
+        const parsed = JSON.parse(stored);
+        if (parsed && parsed.role === "SUPER_ADMIN") {
+          setIsAuthenticated(true);
+          return;
+        }
+      }
+    } catch {}
+    setIsAuthenticated(false);
+  }, []);
+
   // Fetch Stats & Data
   const fetchDashboardData = async () => {
+    if (isAuthenticated === false) return;
     setIsLoading(true);
     try {
       const [statsRes, libRes, txRes] = await Promise.all([
@@ -164,6 +182,48 @@ export default function SuperAdminPortal() {
       console.error("Failed to toggle library status", err);
     }
   };
+
+  if (isAuthenticated === null) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-slate-950 font-sans text-slate-400">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
+          <span className="text-xs font-semibold tracking-wider uppercase text-slate-500">
+            Verifying Super Admin Credentials...
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  if (isAuthenticated === false) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-slate-950 p-4 font-sans text-white">
+        <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900/95 p-8 shadow-2xl backdrop-blur-xl text-center space-y-5">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+            <Lock className="h-7 w-7" />
+          </div>
+          <div>
+            <h2 className="text-xl font-black tracking-tight text-white">
+              Super Admin Sign-In Required
+            </h2>
+            <p className="mt-1.5 text-xs text-slate-400 leading-relaxed">
+              Platform administration requires authenticated Super Admin access. Please sign in with your administrator credentials.
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              window.location.href = "/";
+            }}
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 py-3 text-xs font-bold text-white shadow-lg shadow-indigo-600/30 transition active:scale-98"
+          >
+            <LogIn className="h-4 w-4" />
+            <span>Sign In as Super Admin</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-[#f8fafc] font-sans text-slate-800 antialiased selection:bg-indigo-600 selection:text-white">

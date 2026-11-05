@@ -189,32 +189,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               )}
             </div>
 
-            {/* Auth / Dashboard CTA */}
-            {currentUser ? (
-              <button
-                onClick={onOpenApp}
-                className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-blue-600/25 hover:from-blue-500 hover:to-indigo-500 transition-all"
-              >
-                <span>{t("open_dashboard")}</span>
-                <ArrowRight className="h-3.5 w-3.5 text-white" />
-              </button>
-            ) : (
-              <>
-                <button
-                  onClick={() => onOpenAuth("LOGIN")}
-                  className="rounded-xl px-3.5 py-2 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all"
-                >
-                  {t("sign_in")}
-                </button>
-                <Link
-                  href="/register-library"
-                  className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:from-blue-500 hover:to-indigo-500 hover:scale-[1.02] transition-all"
-                >
-                  <span>{t("register_centre")}</span>
-                  <ArrowRight className="h-3.5 w-3.5 text-white" />
-                </Link>
-              </>
-            )}
+            {/* Auth / Dashboard Sign-In Actions */}
+            <button
+              onClick={() => onOpenAuth("LOGIN")}
+              className="rounded-xl px-3.5 py-2 text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all"
+            >
+              {t("sign_in")}
+            </button>
+            <Link
+              href="/register-library"
+              className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-600/30 hover:from-blue-500 hover:to-indigo-500 hover:scale-[1.02] transition-all"
+            >
+              <span>{t("register_centre")}</span>
+              <ArrowRight className="h-3.5 w-3.5 text-white" />
+            </Link>
           </div>
         </div>
       </header>
@@ -278,27 +266,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   {t("explore_portals")}
                 </span>
                 <div className="flex flex-wrap items-center gap-2">
-                  <Link
-                    href="/owner"
+                  <button
+                    type="button"
+                    onClick={() => onOpenAuth("LOGIN")}
                     className="inline-flex items-center gap-1.5 rounded-xl border border-blue-500/30 bg-blue-950/40 px-3 py-1.5 text-[11px] font-bold text-blue-300 hover:bg-blue-900/40 transition"
                   >
                     <Building className="h-3.5 w-3.5 text-blue-400" />
                     {t("portal_owner")}
-                  </Link>
-                  <Link
-                    href="/staff"
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onOpenAuth("LOGIN")}
                     className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-500/30 bg-indigo-950/40 px-3 py-1.5 text-[11px] font-bold text-indigo-300 hover:bg-indigo-900/40 transition"
                   >
                     <UserCheck className="h-3.5 w-3.5 text-indigo-400" />
                     {t("portal_staff")}
-                  </Link>
-                  <Link
-                    href="/super-admin"
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onOpenAuth("LOGIN")}
                     className="inline-flex items-center gap-1.5 rounded-xl border border-blue-600/30 bg-blue-950/20 px-3 py-1.5 text-[11px] font-bold text-blue-400 hover:bg-blue-900/30 transition"
                   >
                     <ShieldCheck className="h-3.5 w-3.5 text-blue-400" />
                     {t("portal_admin")}
-                  </Link>
+                  </button>
                 </div>
               </div>
 

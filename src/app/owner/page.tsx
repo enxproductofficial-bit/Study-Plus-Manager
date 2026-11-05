@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Sidebar, NavTab } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
@@ -15,13 +15,75 @@ import { StudentManager } from "@/components/students/StudentManager";
 import { EnquiryCrm } from "@/components/admissions/EnquiryCrm";
 import { LibrarySettings } from "@/components/settings/LibrarySettings";
 import { KycDocumentManager } from "@/components/admissions/KycDocumentManager";
-import { ArrowLeft, Sparkles, Building2, ExternalLink, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Sparkles, Building2, ExternalLink, ShieldCheck, Lock, LogIn } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 
 export default function OwnerPortalPage() {
   const { t } = useTranslation();
   const [currentTab, setCurrentTab] = useState<NavTab>("dashboard");
   const [currentBranch, setCurrentBranch] = useState("Main Branch - Shivaji Nagar");
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [userName, setUserName] = useState("Adhyaksha (Owner)");
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("granthsetu_user");
+      if (stored && stored !== "undefined" && stored !== "null") {
+        const parsed = JSON.parse(stored);
+        if (parsed && (parsed.role === "OWNER" || parsed.role === "SUPER_ADMIN")) {
+          setIsAuthenticated(true);
+          if (parsed.name) setUserName(parsed.name);
+          if (parsed.branchName) setCurrentBranch(parsed.branchName);
+          return;
+        }
+      }
+    } catch {}
+    setIsAuthenticated(false);
+  }, []);
+
+  // While checking session
+  if (isAuthenticated === null) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-slate-950 font-sans text-slate-400">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+          <span className="text-xs font-semibold tracking-wider uppercase text-slate-500">
+            Verifying Owner Credentials...
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  // If unauthenticated, enforce Sign In (Zero direct bypass)
+  if (isAuthenticated === false) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-slate-950 p-4 font-sans text-white">
+        <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900/95 p-8 shadow-2xl backdrop-blur-xl text-center space-y-5">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
+            <Lock className="h-7 w-7" />
+          </div>
+          <div>
+            <h2 className="text-xl font-black tracking-tight text-white">
+              Owner Sign-In Required
+            </h2>
+            <p className="mt-1.5 text-xs text-slate-400 leading-relaxed">
+              This portal contains sensitive student records and financial ledgers. Please sign in with your credentials to access the Owner Portal.
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              window.location.href = "/";
+            }}
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 py-3 text-xs font-bold text-white shadow-lg shadow-blue-600/30 transition active:scale-98"
+          >
+            <LogIn className="h-4 w-4" />
+            <span>Sign In to Access Owner Portal</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-slate-100/70 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100">
@@ -39,8 +101,9 @@ export default function OwnerPortalPage() {
           currentBranch={currentBranch}
           onBranchChange={setCurrentBranch}
           userRole="OWNER"
-          userName="Adhyaksha (Owner)"
+          userName={userName}
           onLogout={() => {
+            localStorage.removeItem("granthsetu_user");
             window.location.href = "/";
           }}
         />
